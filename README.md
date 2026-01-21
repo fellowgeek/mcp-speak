@@ -12,12 +12,7 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
 ## Installation
 
 1.  Clone this repository or navigate to the project folder.
-2.  (Optional but recommended) Create and activate a virtual environment:
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-3.  Install the required dependencies:
+2.  Install the required dependencies:
     ```bash
     pip install -r requirements.txt
     ```
