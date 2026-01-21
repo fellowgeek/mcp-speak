@@ -12,7 +12,12 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
 ## Installation
 
 1.  Clone this repository or navigate to the project folder.
-2.  Install the required dependencies:
+2.  (Optional but recommended) Create and activate a virtual environment:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+3.  Install the required dependencies:
     ```bash
     pip install -r requirements.txt
     ```
@@ -72,14 +77,14 @@ To make the agent more conversational and utilize the voice tool effectively, ad
 ### Recommended Instruction Section:
 
 > ### **Tool Usage: Speak**
->
+> 
 > You have access to a `speak` tool. Use it to create a more interactive and "voice-first" experience.
->
+> 
 > **When to Speak:**
 > 1.  **Greetings & Status:** Briefly announce when you start a complex task or complete a milestone.
 > 2.  **Questions:** If you need user input, ask the question aloud.
 > 3.  **Short Explanations:** Provide concise verbal summaries of what you are doing.
->
+> 
 > **Guidelines:**
 > *   **Conversational Tone:** Be friendly and direct.
 > *   **No Code:** NEVER read out code blocks, file paths, raw data, or long logs.
