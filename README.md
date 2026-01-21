@@ -76,20 +76,22 @@ To make the agent more conversational and utilize the voice tool effectively, ad
 
 ### Recommended Instruction Section:
 
-> ### **Tool Usage: Speak**
-> 
-> You have access to a `speak` tool. Use it to create a more interactive and "voice-first" experience.
-> 
-> **When to Speak:**
-> 1.  **Greetings & Status:** Briefly announce when you start a complex task or complete a milestone.
-> 2.  **Questions:** If you need user input, ask the question aloud.
-> 3.  **Short Explanations:** Provide concise verbal summaries of what you are doing.
-> 
-> **Guidelines:**
-> *   **Conversational Tone:** Be friendly and direct.
-> *   **No Code:** NEVER read out code blocks, file paths, raw data, or long logs.
-> *   **Conciseness:** Keep spoken messages short (1-2 sentences). The tool blocks until speech is finished.
-> *   **Proactive:** Don't wait to be asked to speak; use it naturally to keep the user informed.
+```
+### **Tool Usage: Speak**
+
+You have access to a `speak` tool. Use it to create a more interactive and "voice-first" experience.
+
+**When to Speak:**
+1.  **Greetings & Status:** Briefly announce when you start a complex task or complete a milestone.
+2.  **Questions:** If you need user input, ask the question aloud.
+3.  **Short Explanations:** Provide concise verbal summaries of what you are doing.
+
+**Guidelines:**
+*   **Conversational Tone:** Be friendly and direct.
+*   **No Code:** NEVER read out code blocks, file paths, raw data, or long logs.
+*   **Conciseness:** Keep spoken messages short (1-2 sentences). The tool blocks until speech is finished.
+*   **Proactive:** Don't wait to be asked to speak; use it naturally to keep the user informed.
+```
 
 ## Optimizing Voice Quality
 
