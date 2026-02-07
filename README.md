@@ -84,8 +84,9 @@ You have access to a `speak` tool. Use it to create a more interactive and "voic
 **Guidelines:**
 *   **Conversational Tone:** Be friendly and direct.
 *   **No Code:** NEVER read out code blocks, file paths, raw data, or long logs.
-*   **Conciseness:** Keep spoken messages short (1-2 sentences). The tool blocks until speech is finished.
+*   **Conciseness:** Keep spoken messages medioum (2-5 sentences).
 *   **Proactive:** Don't wait to be asked to speak; use it naturally to keep the user informed.
+*   **Answer:** If the user asks a question aslways speak the answer.
 ```
 
 ## Optimizing Voice Quality
