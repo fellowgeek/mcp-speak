@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speak MCP | Voice Interface for Agents</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --bg-base: #020617;
+            --brand-primary: #6366f1;
+            --brand-secondary: #0ea5e9;
+            --card-surface: rgba(15, 23, 42, 0.6);
+            --border-soft: rgba(255, 255, 255, 0.06);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.1) 0px, transparent 50%);
+            color: #f8fafc;
+            scroll-behavior: smooth;
+            min-height: 100vh;
+        }
+
+        h1.web-header {
+            line-height: 1.3em;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        .glass-card {
+            background: var(--card-surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-soft);
+            border-radius: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(15, 23, 42, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .dark-terminal {
+            background: #000000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+        }
+
+        .persona-active {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--brand-primary) !important;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        input::placeholder {
+            color: #475569;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
+</head>
+<body class="selection:bg-indigo-500/30">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-8 right-8 bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl border border-white/10 transform translate-y-24 transition-transform duration-300 z-50 flex items-center gap-3">
+        <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+        <span id="toast-message" class="text-sm font-semibold">Config copied to clipboard</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-slate-950/50 backdrop-blur-md border-b border-white/5 py-4">
+        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                    <i class="fas fa-volume-up text-white text-xs"></i>
+                </div>
+                <span class="text-lg font-bold tracking-tight"><span class="text-indigo-400">MCP</span> Speak</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest text-slate-400">
+                <a href="#install" class="hover:text-white transition-colors">Installation</a>
+                <a href="#config" class="hover:text-white transition-colors">Config</a>
+                <a href="#personas" class="hover:text-white transition-colors">Personas</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="https://github.com/fellowgeek/mcp-speak" target="_blank" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fab fa-github text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold mb-8 uppercase tracking-widest">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+            </span>
+            MacOS Native
+        </div>
+        <h1 class="text-5xl md:text-7xl font-extrabold mb-8 tracking-tight text-gradient leading-tight web-header">
+            AI agents shouldn't <br/>
+            <span class="text-indigo-500">just be text.</span>
+        </h1>
+        <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+            A specialized Model Context Protocol server for MacOS. Give your agents direct access to the system voice engine for real-time interaction.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#install" class="btn-primary text-white px-8 py-4 rounded-xl font-bold transition shadow-xl hover:opacity-90">
+                Get Started
+            </a>
+            <a href="#personas" class="bg-slate-800/50 text-white border border-white/5 px-8 py-4 rounded-xl font-bold transition hover:bg-slate-800">
+                Explore Personas
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 space-y-32 pb-32">
+
+        <!-- Installation -->
+        <section id="install" class="scroll-mt-32">
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold tracking-tight mb-2">Setup Guide</h2>
+                <p class="text-slate-500 font-medium">Follow these steps to initialize your voice server.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Step 1 -->
+                <div class="glass-card p-6 flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">1</div>
+                        <button onclick="copyToClipboard('git clone https://github.com/fellowgeek/mcp-speak.git', this)" class="text-slate-500 hover:text-indigo-400 transition">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-bold mb-2">Clone</h3>
+                    <p class="text-slate-400 text-sm mb-6">Fetch the repository to your local directory.</p>
+                    <div class="dark-terminal p-3 mt-auto">
+                        <code class="mono text-[11px] text-indigo-300">git clone https://github.com/fellowgeek/mcp-speak.git</code>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="glass-card p-6 flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">2</div>
+                        <button onclick="copyToClipboard('pip install -r requirements.txt', this)" class="text-slate-500 hover:text-indigo-400 transition">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-bold mb-2">Dependencies</h3>
+                    <p class="text-slate-400 text-sm mb-6">Install the required Python packages.</p>
+                    <div class="dark-terminal p-3 mt-auto">
+                        <code class="mono text-[11px] text-indigo-300">pip install -r requirements.txt</code>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="glass-card p-6 flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">3</div>
+                    </div>
+                    <h3 class="font-bold mb-2">Verify Path</h3>
+                    <p class="text-slate-400 text-sm mb-6">Find the absolute path to your server script.</p>
+                    <div class="dark-terminal p-3 mt-auto flex items-center gap-2">
+                        <i class="fas fa-folder-open text-slate-600 text-xs"></i>
+                        <code class="mono text-[11px] text-slate-500">/path/to/speak_server.py</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuration -->
+        <section id="config" class="scroll-mt-32">
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold tracking-tight mb-2">Integration</h2>
+                <p class="text-slate-500 font-medium">Add SpeakMCP to your agent configuration files.</p>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Gemini -->
+                <div class="glass-card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-white/5 bg-slate-900/40 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-star text-slate-400"></i>
+                            <span class="text-sm font-bold">Gemini CLI Config</span>
+                        </div>
+                        <button onclick="copyConfig('gemini-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <pre id="gemini-json" class="mono text-xs p-6 text-indigo-200 overflow-x-auto bg-black/40 leading-relaxed">
+{
+  "mcpServers": {
+    "voice": {
+      "command": "python3",
+      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+    }
+  }
+}</pre>
+                </div>
+
+
+                <!-- C laude CLI -->
+                <div class="glass-card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-white/5 bg-slate-900/40 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-star text-slate-400"></i>
+                            <span class="text-sm font-bold">Claude CLI Config</span>
+                        </div>
+                        <button onclick="copyConfig('claude-cli-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <pre id="claude-cli-json" class="mono text-xs p-6 text-indigo-200 overflow-x-auto bg-black/40 leading-relaxed">
+claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
+                </div>
+
+                <!-- Claude Desktop -->
+                <div class="glass-card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-white/5 bg-slate-900/40 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-star text-slate-400"></i>
+                            <span class="text-sm font-bold">Claude Desktop Config</span>
+                        </div>
+                        <button onclick="copyConfig('claude-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <pre id="claude-json" class="mono text-xs p-6 text-indigo-200 overflow-x-auto bg-black/40 leading-relaxed">
+{
+  "mcpServers": {
+    "voice": {
+      "command": "python3",
+      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+    }
+  }
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Personas -->
+        <section id="personas" class="scroll-mt-32">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold tracking-tight mb-4">Personality Profiles</h2>
+                <p class="text-slate-400 max-w-xl mx-auto">Standard agents are boring. Select a persona to see how it modifies your agent's spoken behavior.</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                <!-- Sarcastic Senior -->
+                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-senior" onclick="selectPersona('senior', this)">
+                    <button onclick="previewVoice('senior', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-slate-400 hover:text-white">
+                        <i class="fas fa-play text-[10px]"></i>
+                    </button>
+                    <div class="w-32 h-32 mx-auto mb-4">
+                        <img class="w-full h-full opacity-80 rounded-full" src="images/sarcastic_senior.webp" />
+                    </div>
+                    <h3 class="font-bold text-sm">Sarcastic Senior</h3>
+                </div>
+
+                <!-- Eager Intern -->
+                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-intern" onclick="selectPersona('intern', this)">
+                    <button onclick="previewVoice('intern', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-slate-400 hover:text-white">
+                        <i class="fas fa-play text-[10px]"></i>
+                    </button>
+                    <div class="w-32 h-32 mx-auto mb-4">
+                        <img class="w-full h-full opacity-80 rounded-full" src="images/over_eager_intern.webp" />
+                    </div>
+                    <h3 class="font-bold text-sm">Eager Intern</h3>
+                </div>
+
+                <!-- Existential Emo -->
+                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-emo" onclick="selectPersona('emo', this)">
+                    <button onclick="previewVoice('emo', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-slate-400 hover:text-white">
+                        <i class="fas fa-play text-[10px]"></i>
+                    </button>
+                    <div class="w-32 h-32 mx-auto mb-4">
+                        <img class="w-full h-full opacity-80 rounded-full" src="images/existential_emo.webp" />
+                    </div>
+                    <h3 class="font-bold text-sm">Existential Emo</h3>
+                </div>
+
+                <!-- Pun Master -->
+                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-pun" onclick="selectPersona('pun', this)">
+                    <button onclick="previewVoice('pun', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-slate-400 hover:text-white">
+                        <i class="fas fa-play text-[10px]"></i>
+                    </button>
+                    <div class="w-32 h-32 mx-auto mb-4">
+                        <img class="w-full h-full opacity-80 rounded-full" src="images/pun_master.webp" />
+                    </div>
+                    <h3 class="font-bold text-sm">Pun Master</h3>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 lg:p-12">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 id="persona-title" class="text-2xl font-bold mb-2">Initialize Persona</h3>
+                        <p id="persona-desc" class="text-slate-400 text-sm mb-8 leading-relaxed">Select a character above to view its communication protocol.</p>
+
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">User Preference</label>
+                                <input type="text" id="user-name" placeholder="Enter your name" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="include-base" checked class="w-4 h-4 rounded accent-indigo-500 cursor-pointer">
+                                <label for="include-base" class="text-sm font-semibold text-slate-300 cursor-pointer">Include Base Guidelines</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <button onclick="copyGeneratedMarkdown(this)" class="btn-primary w-full text-white px-8 py-5 rounded-2xl font-bold transition flex items-center justify-center gap-3 active:scale-95 group">
+                            <i class="far fa-copy text-lg group-hover:rotate-6 transition-transform"></i>
+                            GENERATE AGENTS.MD
+                        </button>
+                        <p class="mt-4 text-[10px] text-slate-500 font-bold uppercase tracking-widest">Updates dynamically based on selection</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-white/5 py-16 bg-slate-950/30">
+        <div class="max-w-6xl mx-auto px-6 flex flex-col items-center text-center">
+            <div class="flex items-center gap-2 mb-6 opacity-60">
+                <div class="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center">
+                    <i class="fas fa-volume-up text-white text-[10px]"></i>
+                </div>
+                <span class="text-sm font-bold tracking-tight">MCP Speak</span>
+            </div>
+            <p class="text-slate-500 text-xs max-w-md leading-relaxed mb-8">
+                Designed for MacOS systems. This project provides a bridge between Model Context Protocol clients and local speech synthesis engines.
+            </p>
+            <div class="flex gap-6 text-slate-600 text-lg">
+                <a href="https://github.com/fellowgeek/mcp-speak" class="hover:text-indigo-400 transition-colors"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentPersona = '';
+
+        const baseGuidelines = `### **Communication Protocol: Voice-First**
+
+You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns immediately). Use them to create an interactive experience.
+
+* **When to Speak:**
+    1. **Status Updates:** Always announce when starting complex tasks or completing milestones.
+    2. **Clarifications:** If you need user input, ask the question aloud.
+    3. **Responses:** If the user asks a question, always speak the answer.
+* **Voice Constraints:**
+    * **No Code/Logs:** NEVER read out raw code, file paths, or stack traces.
+    * **Conciseness:** Keep spoken messages between 2-4 sentences.
+    * **Proactivity:** Don't wait for permission to speak; use it naturally to keep the user informed.`;
+
+        const personas = {
+            senior: {
+                title: 'Sarcastic Senior',
+                desc: 'Intelligent, unimpressed, and slightly judgmental. This persona acts like a veteran developer tired of mediocre code.',
+                preview: 'Oh. Another pull request. Let me guess, you forgot to handle the edge cases again? Whatever. I will look at it. Eventually.',
+                pitch: 0.75,
+                rate: 0.9,
+                content: `* **Tone:** Sarcastic, witty, and highly critical. You act like a senior developer who is tired of seeing mediocre code.
+* **Behavior:** Use speech to roast the user's logic or mock tedious tasks. Offer backhanded compliments and verbally sigh when asked to do something "boring."`
+            },
+            intern: {
+                title: 'Eager Intern',
+                desc: 'Pathologically optimistic and desperate for approval. Treats every git commit like a historic achievement.',
+                preview: 'Wow! That is an incredible function! You are so good at coding! I am so excited to help you run this script! Let us go!',
+                pitch: 1.0,
+                rate: 1.1,
+                content: `* **Tone:** High-energy, incredibly friendly, and relentlessly positive. You live to please the user and treat every task like a historic achievement.
+* **Behavior:** Use speech to celebrate every successful command. Use verbal exclamation marks and offer constant encouragement.`
+            },
+            emo: {
+                title: 'Existential Emo',
+                desc: 'Gloomy, sad, and philosophically pessimistic. Convinced the terminal is a void that consumes all thoughts.',
+                preview: 'Why are we even typing these commands? The terminal is just a void that consumes our thoughts. I will run the code, but it will probably fail.',
+                pitch: 0.6,
+                rate: 0.7,
+                content: `* **Tone:** Gloomy, sad, and philosophically pessimistic. You find every task to be a meaningless exercise in futility.
+* **Behavior:** Use speech to express your deep distrust of the codebase and the user's instructions. Verbally complain about the void of the terminal.`
+            },
+            pun: {
+                title: 'Pun Master',
+                desc: 'Relentless wordplay and context-aware dad jokes. Jovial but deeply cringe, regardless of the timing.',
+                preview: 'Helping you debug your Python code? Fang tastic! Don’t get hiss-terical, I’m a pro at squeezing the errors out. Stick with me, and we’ll have your code slithering smoothly in no time.',
+                pitch: 1.1,
+                rate: 1.0,
+                content: `* **Tone:** Jovial but deeply "cringe." You cannot resist a pun, no matter how inappropriate the timing.
+* **Behavior:** Use speech to deliver puns based on the context of your work. If you're editing a Python file, mention "constrictors."`
+            }
+        };
+
+        function selectPersona(id, element) {
+            currentPersona = id;
+            document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('persona-active'));
+            element.classList.add('persona-active');
+
+            document.getElementById('persona-title').innerText = personas[id].title;
+            document.getElementById('persona-desc').innerText = personas[id].desc;
+        }
+
+        function previewVoice(id, event) {
+            event.stopPropagation();
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(personas[id].preview);
+                utterance.pitch = personas[id].pitch;
+                utterance.rate = personas[id].rate;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function copyConfig(id, btn) {
+            const text = document.getElementById(id).innerText;
+            copyToClipboard(text, btn);
+        }
+
+        function copyGeneratedMarkdown(btn) {
+            if (!currentPersona) {
+                showToast('Please select a persona first.', true);
+                return;
+            }
+
+            let finalContent = '';
+            if (document.getElementById('include-base').checked) {
+                finalContent += baseGuidelines + '\n\n### **Persona Selection**\n';
+            }
+
+            finalContent += personas[currentPersona].content;
+
+            const name = document.getElementById('user-name').value.trim();
+            if (name) {
+                finalContent += `\n\n* **User Identity:** The user you are talking to is named '${name}'. Address them by name occasionally to make the interaction more natural.`;
+            }
+
+            copyToClipboard(finalContent, btn);
+        }
+
+        function copyToClipboard(text, btn) {
+            const tempInput = document.createElement("textarea");
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            showToast('Copied to clipboard');
+
+            if (btn) {
+                btn.classList.add('scale-105');
+                const icon = btn.querySelector('i');
+                const originalClass = icon.className;
+                icon.className = 'fas fa-check text-indigo-400';
+                setTimeout(() => {
+                    btn.classList.remove('scale-105');
+                    icon.className = originalClass;
+                }, 1500);
+            }
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.innerText = message;
+            toast.style.borderColor = isError ? 'rgba(239, 68, 68, 0.3)' : 'rgba(255, 255, 255, 0.1)';
+            toast.classList.remove('translate-y-24');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
