@@ -4,6 +4,8 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
 
 **Note: This server is strictly for MacOS systems.**
 
+[MCP Speak Website](https://fellowgeek.github.io/mcp-speak/)
+
 ## Prerequisites
 
 - MacOS
