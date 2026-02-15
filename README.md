@@ -1,4 +1,4 @@
-# Speak MCP Server for MacOS
+# Speech MCP Server for MacOS
 
 This is a Model Context Protocol (MCP) server that provides text-to-speech capabilities using the native MacOS `say` command. It allows AI agents (like Claude Desktop or Gemini CLI) to speak to you directly.
 

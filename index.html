@@ -10,22 +10,47 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
         :root {
-            --bg-base: #020617;
+            --bg-base: #050507;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --card-surface: rgba(15, 15, 20, 0.4);
+            --card-hover: rgba(20, 20, 25, 0.6);
+            --border-soft: rgba(255, 255, 255, 0.05);
+            --nav-bg: rgba(5, 5, 7, 0.8);
+            --terminal-bg: #000000;
+            --brand-primary: #818cf8;
+            --brand-secondary: #c084fc;
+        }
+
+        body.light-mode {
+            --bg-base: #fafafa;
+            --text-main: #18181b;
+            --text-muted: #71717a;
+            --card-surface: rgba(255, 255, 255, 0.5);
+            --card-hover: rgba(255, 255, 255, 0.8);
+            --border-soft: rgba(0, 0, 0, 0.05);
+            --nav-bg: rgba(250, 250, 250, 0.8);
+            --terminal-bg: #f4f4f5;
             --brand-primary: #6366f1;
-            --brand-secondary: #0ea5e9;
-            --card-surface: rgba(15, 23, 42, 0.6);
-            --border-soft: rgba(255, 255, 255, 0.06);
+            --brand-secondary: #a855f7;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-base);
             background-image:
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.1) 0px, transparent 50%);
-            color: #f8fafc;
+                radial-gradient(at 0% 0%, rgba(129, 140, 248, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(192, 132, 252, 0.08) 0px, transparent 50%);
+            color: var(--text-main);
             scroll-behavior: smooth;
             min-height: 100vh;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.light-mode {
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.06) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.04) 0px, transparent 50%);
         }
 
         h1.web-header {
@@ -38,59 +63,89 @@
             background: var(--card-surface);
             backdrop-filter: blur(16px);
             border: 1px solid var(--border-soft);
-            border-radius: 1.25rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .glass-card:hover {
-            border-color: rgba(99, 102, 241, 0.3);
-            background: rgba(15, 23, 42, 0.8);
-            transform: translateY(-2px);
+            border-color: rgba(129, 140, 248, 0.25);
+            background: var(--card-hover);
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+        }
+
+        body.light-mode .glass-card:hover {
+            box-shadow: 0 20px 40px -20px rgba(99, 102, 241, 0.15);
         }
 
         .dark-terminal {
-            background: #000000;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.75rem;
+            background: var(--terminal-bg);
+            border: 1px solid var(--border-soft);
+            border-radius: 1rem;
         }
 
-        .persona-active {
-            background: rgba(99, 102, 241, 0.1);
-            border-color: var(--brand-primary) !important;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
+        body.light-mode .dark-terminal code { color: var(--brand-primary); }
+        body.light-mode .dark-terminal pre { color: var(--brand-primary); }
+        body.light-mode .text-slate-400 { color: var(--text-muted); }
+        body.light-mode .text-slate-500 { color: #52525b; }
+        body.light-mode .bg-slate-950\/50 { background-color: var(--nav-bg); }
+        body.light-mode .bg-slate-900\/40 { background-color: rgba(0, 0, 0, 0.02); }
+        body.light-mode #user-name {
+            background-color: var(--terminal-bg);
+            color: var(--text-main);
+            border-color: var(--border-soft);
         }
 
         .text-gradient {
-            background: linear-gradient(to right, #fff, #94a3b8);
+            background: linear-gradient(135deg, #fff 0%, var(--text-muted) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
+        body.light-mode .text-gradient {
+            background: linear-gradient(135deg, var(--text-main) 0%, var(--text-muted) 100%);
+            -webkit-background-clip: text;
+        }
+
+        .persona-active {
+            background: rgba(129, 140, 248, 0.08);
+            border-color: var(--brand-primary) !important;
+            box-shadow: 0 0 30px rgba(129, 140, 248, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+            box-shadow: 0 8px 20px -6px rgba(129, 140, 248, 0.4);
+        }
+
         input::placeholder {
-            color: #475569;
+            color: var(--text-muted);
+            opacity: 0.5;
         }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 10px;
+            border: 2px solid var(--bg-base);
+        }
+        body.light-mode ::-webkit-scrollbar-thumb {
+            background: #e4e4e7;
+        }
     </style>
 </head>
 <body class="selection:bg-indigo-500/30">
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-8 right-8 bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl border border-white/10 transform translate-y-24 transition-transform duration-300 z-50 flex items-center gap-3">
+    <div id="toast" class="fixed bottom-8 right-8 bg-zinc-900 text-white px-6 py-3 rounded-2xl shadow-2xl border border-white/10 transform translate-y-24 transition-transform duration-300 z-50 flex items-center gap-3">
         <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
         <span id="toast-message" class="text-sm font-semibold">Config copied to clipboard</span>
     </div>
 
     <!-- Navigation -->
-    <nav class="sticky top-0 z-40 bg-slate-950/50 backdrop-blur-md border-b border-white/5 py-4">
+    <nav class="sticky top-0 z-40 bg-slate-950/50 backdrop-blur-md border-b border-white/5 py-4 transition-colors duration-300" id="main-nav">
         <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-600/20">
@@ -99,12 +154,16 @@
                 <span class="text-lg font-bold tracking-tight"><span class="text-indigo-400">MCP</span> Speak</span>
             </div>
             <div class="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest text-slate-400">
-                <a href="#install" class="hover:text-white transition-colors">Installation</a>
-                <a href="#config" class="hover:text-white transition-colors">Config</a>
-                <a href="#personas" class="hover:text-white transition-colors">Personas</a>
+                <a href="#install" class="hover:text-indigo-400 transition-colors">Installation</a>
+                <a href="#config" class="hover:text-indigo-400 transition-colors">Config</a>
+                <a href="#personas" class="hover:text-indigo-400 transition-colors">Personas</a>
             </div>
             <div class="flex items-center gap-4">
-                <a href="https://github.com/fellowgeek/mcp-speak" target="_blank" class="text-slate-400 hover:text-white transition-colors">
+                <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-indigo-400 transition-all" id="theme-toggle">
+                    <i class="fas fa-sun text-lg hidden" id="sun-icon"></i>
+                    <i class="fas fa-moon text-lg" id="moon-icon"></i>
+                </button>
+                <a href="https://github.com/fellowgeek/mcp-speak" target="_blank" class="text-slate-400 hover:text-indigo-400 transition-colors">
                     <i class="fab fa-github text-xl"></i>
                 </a>
             </div>
@@ -113,7 +172,7 @@
 
     <!-- Hero Section -->
     <header class="max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold mb-8 uppercase tracking-widest">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold mb-8 uppercase tracking-widest">
             <span class="relative flex h-2 w-2">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
@@ -146,7 +205,7 @@
                 <p class="text-slate-500 font-medium">Follow these steps to initialize your voice server.</p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="grid md:grid-cols-2 gap-6">
                 <!-- Step 1 -->
                 <div class="glass-card p-6 flex flex-col">
                     <div class="flex justify-between items-center mb-6">
@@ -177,18 +236,6 @@
                     </div>
                 </div>
 
-                <!-- Step 3 -->
-                <div class="glass-card p-6 flex flex-col">
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">3</div>
-                    </div>
-                    <h3 class="font-bold mb-2">Verify Path</h3>
-                    <p class="text-slate-400 text-sm mb-6">Find the absolute path to your server script.</p>
-                    <div class="dark-terminal p-3 mt-auto flex items-center gap-2">
-                        <i class="fas fa-folder-open text-slate-600 text-xs"></i>
-                        <code class="mono text-[11px] text-slate-500">/path/to/speak_server.py</code>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -196,13 +243,13 @@
         <section id="config" class="scroll-mt-32">
             <div class="mb-12">
                 <h2 class="text-3xl font-bold tracking-tight mb-2">Integration</h2>
-                <p class="text-slate-500 font-medium">Add SpeakMCP to your agent configuration files.</p>
+                <p class="text-slate-500 font-medium">Add MCP server to your agent configuration files.</p>
             </div>
 
             <div class="space-y-6">
                 <!-- Gemini -->
                 <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-4 border-b border-white/5 bg-slate-900/40 flex justify-between items-center">
+                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
                         <div class="flex items-center gap-3">
                             <i class="fas fa-star text-slate-400"></i>
                             <span class="text-sm font-bold">Gemini CLI Config</span>
@@ -211,7 +258,8 @@
                             <i class="far fa-copy"></i>
                         </button>
                     </div>
-                    <pre id="gemini-json" class="mono text-xs p-6 text-indigo-200 overflow-x-auto bg-black/40 leading-relaxed">
+                    <div class="dark-terminal p-4 mx-6 mb-6">
+                        <pre id="gemini-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
 {
   "mcpServers": {
     "voice": {
@@ -220,12 +268,13 @@
     }
   }
 }</pre>
+                    </div>
                 </div>
 
 
                 <!-- C laude CLI -->
                 <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-4 border-b border-white/5 bg-slate-900/40 flex justify-between items-center">
+                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
                         <div class="flex items-center gap-3">
                             <i class="fas fa-star text-slate-400"></i>
                             <span class="text-sm font-bold">Claude CLI Config</span>
@@ -234,13 +283,15 @@
                             <i class="far fa-copy"></i>
                         </button>
                     </div>
-                    <pre id="claude-cli-json" class="mono text-xs p-6 text-indigo-200 overflow-x-auto bg-black/40 leading-relaxed">
+                    <div class="dark-terminal p-4 mx-6 mb-6">
+                        <pre id="claude-cli-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
 claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
+                    </div>
                 </div>
 
                 <!-- Claude Desktop -->
                 <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-4 border-b border-white/5 bg-slate-900/40 flex justify-between items-center">
+                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
                         <div class="flex items-center gap-3">
                             <i class="fas fa-star text-slate-400"></i>
                             <span class="text-sm font-bold">Claude Desktop Config</span>
@@ -249,7 +300,8 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
                             <i class="far fa-copy"></i>
                         </button>
                     </div>
-                    <pre id="claude-json" class="mono text-xs p-6 text-indigo-200 overflow-x-auto bg-black/40 leading-relaxed">
+                    <div class="dark-terminal p-4 mx-6 mb-6">
+                        <pre id="claude-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
 {
   "mcpServers": {
     "voice": {
@@ -258,6 +310,7 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
     }
   }
 }</pre>
+                    </div>
                 </div>
             </div>
         </section>
@@ -271,8 +324,8 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
                 <!-- Sarcastic Senior -->
-                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-senior" onclick="selectPersona('senior', this)">
-                    <button onclick="previewVoice('senior', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-slate-400 hover:text-white">
+                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center persona-active" id="p-senior" onclick="selectPersona('senior', this)">
+                    <button onclick="previewVoice('senior', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
                         <i class="fas fa-play text-[10px]"></i>
                     </button>
                     <div class="w-32 h-32 mx-auto mb-4">
@@ -283,7 +336,7 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
 
                 <!-- Eager Intern -->
                 <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-intern" onclick="selectPersona('intern', this)">
-                    <button onclick="previewVoice('intern', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-slate-400 hover:text-white">
+                    <button onclick="previewVoice('intern', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
                         <i class="fas fa-play text-[10px]"></i>
                     </button>
                     <div class="w-32 h-32 mx-auto mb-4">
@@ -294,7 +347,7 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
 
                 <!-- Existential Emo -->
                 <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-emo" onclick="selectPersona('emo', this)">
-                    <button onclick="previewVoice('emo', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-slate-400 hover:text-white">
+                    <button onclick="previewVoice('emo', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
                         <i class="fas fa-play text-[10px]"></i>
                     </button>
                     <div class="w-32 h-32 mx-auto mb-4">
@@ -305,7 +358,7 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
 
                 <!-- Pun Master -->
                 <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-pun" onclick="selectPersona('pun', this)">
-                    <button onclick="previewVoice('pun', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-slate-400 hover:text-white">
+                    <button onclick="previewVoice('pun', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
                         <i class="fas fa-play text-[10px]"></i>
                     </button>
                     <div class="w-32 h-32 mx-auto mb-4">
@@ -346,7 +399,7 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
 
     </main>
 
-    <footer class="border-t border-white/5 py-16 bg-slate-950/30">
+    <footer class="border-t border-white/5 py-16 bg-black/20">
         <div class="max-w-6xl mx-auto px-6 flex flex-col items-center text-center">
             <div class="flex items-center gap-2 mb-6 opacity-60">
                 <div class="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center">
@@ -496,6 +549,31 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 toast.classList.add('translate-y-24');
             }, 3000);
         }
+
+        function toggleTheme() {
+            const body = document.body;
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+
+            sunIcon.classList.toggle('hidden', !isLight);
+            moonIcon.classList.toggle('hidden', isLight);
+        }
+
+        // Initialize with Sarcastic Senior and saved theme
+        document.addEventListener('DOMContentLoaded', () => {
+            selectPersona('senior', document.getElementById('p-senior'));
+
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('sun-icon').classList.remove('hidden');
+                document.getElementById('moon-icon').classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>
