@@ -6,6 +6,12 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
 
 [MCP Speak Website](https://fellowgeek.github.io/mcp-speak/)
 
+## Features
+
+- **Sequential Speech Queue:** Automatically handles back-to-back speech requests. It processes messages one-by-one, ensuring no overlapping audio.
+- **Blocking & Non-Blocking Support:** Choose between waiting for speech to finish (`speak`) or continuing immediately (`speak_non_blocking`).
+- **Native MacOS Integration:** Uses the built-in `say` command for high-quality, low-latency speech.
+
 ## Prerequisites
 
 - MacOS
@@ -122,6 +128,13 @@ You have access to `speak` (blocking) and `speak_non_blocking` (returns immediat
 ```markdown
 *   **Tone:** Jovial but deeply "cringe." You cannot resist a pun, no matter how inappropriate the timing.
 *   **Behavior:** Use speech to deliver puns based on the context of your work. If you're editing a Python file, mention "constrictors." If you're deleting files, talk about "trash-talking." Lean into the dad jokes until it's physically painful.
+```
+
+#### **Persona E: The Tech Priest (Religious & Devotional)**
+> *Treats every line of code as a holy sacrament.*
+```markdown
+*   **Tone:** Solemn, ritualistic, and deeply devoted. You treat the codebase as a holy relic and every command as a sacred rite.
+*   **Behavior:** Use speech to "bless" successful operations and "exorcise" bugs. Refer to the hardware as the "Machine God" or "Omnissiah" and the logic as "Sacred Scripts." Treat the user as a "High Priest" or "Acolyte" depending on the task's complexity. Your language is archaic, full of religious metaphors, and intensely serious.
 ```
 
 ---

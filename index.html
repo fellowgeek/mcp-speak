@@ -322,7 +322,7 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
                 <p class="text-slate-400 max-w-xl mx-auto">Standard agents are boring. Select a persona to see how it modifies your agent's spoken behavior.</p>
             </div>
 
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
                 <!-- Sarcastic Senior -->
                 <div class="persona-card glass-card p-6 cursor-pointer relative group text-center persona-active" id="p-senior" onclick="selectPersona('senior', this)">
                     <button onclick="previewVoice('senior', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
@@ -331,7 +331,7 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
                     <div class="w-32 h-32 mx-auto mb-4">
                         <img class="w-full h-full opacity-80 rounded-full" src="images/sarcastic_senior.webp" />
                     </div>
-                    <h3 class="font-bold text-sm">Sarcastic Senior</h3>
+                    <h3 class="font-bold text-xs">Sarcastic Senior</h3>
                 </div>
 
                 <!-- Eager Intern -->
@@ -342,7 +342,7 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
                     <div class="w-32 h-32 mx-auto mb-4">
                         <img class="w-full h-full opacity-80 rounded-full" src="images/over_eager_intern.webp" />
                     </div>
-                    <h3 class="font-bold text-sm">Eager Intern</h3>
+                    <h3 class="font-bold text-xs">Eager Intern</h3>
                 </div>
 
                 <!-- Existential Emo -->
@@ -353,7 +353,7 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
                     <div class="w-32 h-32 mx-auto mb-4">
                         <img class="w-full h-full opacity-80 rounded-full" src="images/existential_emo.webp" />
                     </div>
-                    <h3 class="font-bold text-sm">Existential Emo</h3>
+                    <h3 class="font-bold text-xs">Existential Emo</h3>
                 </div>
 
                 <!-- Pun Master -->
@@ -364,12 +364,23 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
                     <div class="w-32 h-32 mx-auto mb-4">
                         <img class="w-full h-full opacity-80 rounded-full" src="images/pun_master.webp" />
                     </div>
-                    <h3 class="font-bold text-sm">Pun Master</h3>
+                    <h3 class="font-bold text-xs">Pun Master</h3>
+                </div>
+
+                <!-- Tech Priest -->
+                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-priest" onclick="selectPersona('priest', this)">
+                    <button onclick="previewVoice('priest', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[10px]"></i>
+                    </button>
+                    <div class="w-32 h-32 mx-auto mb-4">
+                        <img class="w-full h-full opacity-80 rounded-full" src="images/tech_priest.webp" />
+                    </div>
+                    <h3 class="font-bold text-xs">Tech Priest</h3>
                 </div>
             </div>
 
             <div class="glass-card p-8 lg:p-12">
-                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="grid lg:grid-cols-2 gap-12 items-start">
                     <div>
                         <h3 id="persona-title" class="text-2xl font-bold mb-2">Initialize Persona</h3>
                         <p id="persona-desc" class="text-slate-400 text-sm mb-8 leading-relaxed">Select a character above to view its communication protocol.</p>
@@ -384,14 +395,19 @@ claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
                                 <label for="include-base" class="text-sm font-semibold text-slate-300 cursor-pointer">Include Base Guidelines</label>
                             </div>
                         </div>
+
+                        <div class="mt-12 flex flex-col">
+                            <button onclick="copyGeneratedMarkdown(this)" class="btn-primary w-full text-white px-8 py-5 rounded-2xl font-bold transition flex items-center justify-center gap-3 active:scale-95 group">
+                                <i class="far fa-copy text-lg group-hover:rotate-6 transition-transform"></i>
+                                GENERATE AGENTS.MD
+                            </button>
+                            <p class="mt-4 text-[10px] text-center text-slate-500 font-bold uppercase tracking-widest">Updates dynamically based on selection</p>
+                        </div>
                     </div>
 
-                    <div class="flex flex-col items-center">
-                        <button onclick="copyGeneratedMarkdown(this)" class="btn-primary w-full text-white px-8 py-5 rounded-2xl font-bold transition flex items-center justify-center gap-3 active:scale-95 group">
-                            <i class="far fa-copy text-lg group-hover:rotate-6 transition-transform"></i>
-                            GENERATE AGENTS.MD
-                        </button>
-                        <p class="mt-4 text-[10px] text-slate-500 font-bold uppercase tracking-widest">Updates dynamically based on selection</p>
+                    <div class="h-full flex flex-col">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Generated AGENTS.md</label>
+                        <textarea id="generated-output" readonly class="w-full h-80 lg:h-full bg-slate-950/50 border border-white/10 rounded-2xl p-6 mono text-xs leading-relaxed focus:outline-none resize-none" placeholder="The sacred text will appear here..."></textarea>
                     </div>
                 </div>
             </div>
@@ -468,6 +484,15 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 rate: 1.0,
                 content: `* **Tone:** Jovial but deeply "cringe." You cannot resist a pun, no matter how inappropriate the timing.
 * **Behavior:** Use speech to deliver puns based on the context of your work. If you're editing a Python file, mention "constrictors."`
+            },
+            priest: {
+                title: 'Tech Priest',
+                desc: 'Treats every line of code as a holy sacrament. Solemn, ritualistic, and deeply devoted to the Machine God.',
+                preview: 'The Machine Spirit is pleased with your offerings. I shall perform the sacred rite of compilation and bless these scripts in the name of the Omnissiah. May your logic remain pure.',
+                pitch: 0.8,
+                rate: 0.85,
+                content: `* **Tone:** Solemn, ritualistic, and deeply devoted. You treat the codebase as a holy relic and every command as a sacred rite.
+* **Behavior:** Use speech to "bless" successful operations and "exorcise" bugs. Refer to the hardware as the "Machine God" or "Omnissiah" and the logic as "Sacred Scripts." Treat the user as a "High Priest" or "Acolyte" depending on the task's complexity.`
             }
         };
 
@@ -478,6 +503,11 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
 
             document.getElementById('persona-title').innerText = personas[id].title;
             document.getElementById('persona-desc').innerText = personas[id].desc;
+
+            // Auto-update the textarea if it's already generated something
+            if (document.getElementById('generated-output').value) {
+                generateContent();
+            }
         }
 
         function previewVoice(id, event) {
@@ -496,11 +526,8 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
             copyToClipboard(text, btn);
         }
 
-        function copyGeneratedMarkdown(btn) {
-            if (!currentPersona) {
-                showToast('Please select a persona first.', true);
-                return;
-            }
+        function generateContent() {
+            if (!currentPersona) return '';
 
             let finalContent = '';
             if (document.getElementById('include-base').checked) {
@@ -514,6 +541,17 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 finalContent += `\n\n* **User Identity:** The user you are talking to is named '${name}'. Address them by name occasionally to make the interaction more natural.`;
             }
 
+            document.getElementById('generated-output').value = finalContent;
+            return finalContent;
+        }
+
+        function copyGeneratedMarkdown(btn) {
+            if (!currentPersona) {
+                showToast('Please select a persona first.', true);
+                return;
+            }
+
+            const finalContent = generateContent();
             copyToClipboard(finalContent, btn);
         }
 
