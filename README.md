@@ -68,7 +68,7 @@ Add the server configuration:
 If you are using Anthropic's **Claude Code** CLI, you can add the MCP server by running the following command in your terminal:
 
 ```bash
-claude mcp add voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py
+claude mcp add --scope user voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py
 ```
 
 Alternatively, you can manually add it to your global Claude CLI config file (usually `~/.claude/config.json`).
