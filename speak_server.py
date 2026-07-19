@@ -1,3 +1,9 @@
+# /// script
+# dependencies = [
+#   "mcp",
+# ]
+# ///
+
 import subprocess
 import queue
 import threading

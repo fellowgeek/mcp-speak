@@ -8,7 +8,10 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
 
 ## Features
 
-- **Sequential Speech Queue:** Automatically handles back-to-back speech requests. It processes messages one-by-one, ensuring no overlapping audio.
+- **Interactive Setup Wizard:** Simply run `python3 setup.py` to generate persona instructions for your favorite AI editor (`AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `.cursorrules`).
+- **Auto-Provisioning Virtual Environment:** Uses `run.sh` to automatically create a local `.venv` and install dependencies if missing.
+- **Modular Personas:** Standardized persona guidelines stored in the `personas/` folder.
+- **Sequential Speech Queue:** Automatically handles back-to-back speech requests without overlapping audio.
 - **Blocking & Non-Blocking Support:** Choose between waiting for speech to finish (`speak`) or continuing immediately (`speak_non_blocking`).
 - **Native MacOS Integration:** Uses the built-in `say` command for high-quality, low-latency speech.
 
@@ -17,100 +20,84 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
 - MacOS
 - Python 3 installed
 
-## Installation
+## Quick Start (Interactive Setup)
 
-1.  Clone this repository or navigate to the project folder.
-2.  Install the required dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+1. Clone this repository or navigate to the project folder:
+   ```bash
+   git clone https://github.com/fellowgeek/mcp-speak.git
+   cd mcp-speak
+   ```
+2. Run the interactive setup wizard (automatically sets up personas & permissions for `run.sh`):
+   ```bash
+   python3 setup.py
+   ```
 
 ## Configuration
 
-### 1. Google Antigravity (AGY)
+Running **`python3 setup.py`** automatically configures the MCP server in your selected tool's configuration file!
 
-To use this with Google Antigravity, edit your user settings file located at `~/.gemini/settings.json`.
+### Manual Configuration (Optional)
 
-Add your server under the `mcpServers` key:
+If you prefer to configure your MCP client manually, add the `"voice"` server pointing to `run.sh`:
 
+#### 1. Google Antigravity (AGY)
+Edit `~/.gemini/antigravity/mcp_config.json`:
 ```json
 {
   "mcpServers": {
     "voice": {
-      "command": "python3",
-      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+      "command": "/ABSOLUTE/PATH/TO/run.sh"
     }
   }
 }
 ```
-*Make sure to replace `/ABSOLUTE/PATH/TO/speak_server.py` with the actual full path to the file.*
 
-### 2. Claude CLI (Claude Code)
-
-If you are using Anthropic's **Claude Code** CLI, you can add the MCP server by running the following command in your terminal:
-
+#### 2. Claude CLI (Claude Code)
 ```bash
-claude mcp add --scope user voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py
+claude mcp add --scope user voice /ABSOLUTE/PATH/TO/run.sh
 ```
 
-Alternatively, you can manually add it to your global Claude CLI config file (usually `~/.claude/config.json`).
-
-### 3. Claude Desktop
-
-To use this with Claude Desktop, edit your configuration file located at:
-`~/Library/Application Support/Claude/claude_desktop_config.json`
-
-Add the server configuration:
-
+#### 3. Claude Desktop
+Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
     "voice": {
-      "command": "python3",
-      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+      "command": "/ABSOLUTE/PATH/TO/run.sh"
     }
   }
 }
 ```
 
-### 4. Cursor IDE
-
-To use this with Cursor, edit your global MCP config file located at `~/.cursor/mcp.json` (or `.cursor/mcp.json` in your project root):
-
+#### 4. Cursor IDE
+Edit `~/.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
     "voice": {
-      "command": "python3",
-      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+      "command": "/ABSOLUTE/PATH/TO/run.sh"
     }
   }
 }
 ```
 
-### 5. Windsurf Editor
-
-To use this with Windsurf, edit your MCP config file located at `~/.codeium/windsurf/mcp_config.json`:
-
+#### 5. Windsurf Editor
+Edit `~/.codeium/windsurf/mcp_config.json`:
 ```json
 {
   "mcpServers": {
     "voice": {
-      "command": "python3",
-      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+      "command": "/ABSOLUTE/PATH/TO/run.sh"
     }
   }
 }
 ```
 
-## Agent Personalization (AGENTS.md (CLAUDE.md, GEMINI.md, etc.))
+## Agent Personalization (AGENTS.md / GEMINI.md / CLAUDE.md)
 
-To give your agent a specific personality, create a file named `AGENTS.md` (or `.gemini/GEMINI.md` / `.claude/CLAUDE.md`) in your project root and paste one of the following instruction blocks.
+Running **`python3 setup.py`** will automatically assemble and generate your agent prompt file.
 
-### **How to use:**
-1. Copy the **Base Guidelines** below.
-2. Choose one **Persona** and append it to the guidelines.
-3. (Optional) Append the **Name Personalization** block.
+If you prefer to configure files manually or create your own custom prompt, modular persona files are located in the **[`personas/`](personas/)** folder. You can concatenate [`personas/base_guidelines.md`](personas/base_guidelines.md) with any persona from `personas/`:
 
 ---
 

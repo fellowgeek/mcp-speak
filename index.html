@@ -210,14 +210,14 @@
                 <div class="glass-card p-6 flex flex-col">
                     <div class="flex justify-between items-center mb-6">
                         <div class="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">1</div>
-                        <button onclick="copyToClipboard('git clone https://github.com/fellowgeek/mcp-speak.git', this)" class="text-slate-500 hover:text-indigo-400 transition">
+                        <button onclick="copyToClipboard('git clone https://github.com/fellowgeek/mcp-speak.git && cd mcp-speak', this)" class="text-slate-500 hover:text-indigo-400 transition">
                             <i class="far fa-copy"></i>
                         </button>
                     </div>
-                    <h3 class="font-bold mb-2">Clone</h3>
-                    <p class="text-slate-400 text-sm mb-6">Fetch the repository to your local directory.</p>
+                    <h3 class="font-bold mb-2">Clone Repository</h3>
+                    <p class="text-slate-400 text-sm mb-6">Fetch the code and navigate into the project directory.</p>
                     <div class="dark-terminal p-3 mt-auto">
-                        <code class="mono text-[11px] text-indigo-300">git clone https://github.com/fellowgeek/mcp-speak.git</code>
+                        <code class="mono text-[11px] text-indigo-300">git clone https://github.com/fellowgeek/mcp-speak.git && cd mcp-speak</code>
                     </div>
                 </div>
 
@@ -225,25 +225,24 @@
                 <div class="glass-card p-6 flex flex-col">
                     <div class="flex justify-between items-center mb-6">
                         <div class="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">2</div>
-                        <button onclick="copyToClipboard('pip install -r requirements.txt', this)" class="text-slate-500 hover:text-indigo-400 transition">
+                        <button onclick="copyToClipboard('python3 setup.py', this)" class="text-slate-500 hover:text-indigo-400 transition">
                             <i class="far fa-copy"></i>
                         </button>
                     </div>
-                    <h3 class="font-bold mb-2">Dependencies</h3>
-                    <p class="text-slate-400 text-sm mb-6">Install the required Python packages.</p>
+                    <h3 class="font-bold mb-2">Run Setup Wizard</h3>
+                    <p class="text-slate-400 text-sm mb-6">Configures your persona, permissions, and virtual environment automatically.</p>
                     <div class="dark-terminal p-3 mt-auto">
-                        <code class="mono text-[11px] text-indigo-300">pip install -r requirements.txt</code>
+                        <code class="mono text-[11px] text-indigo-300">python3 setup.py</code>
                     </div>
                 </div>
-
             </div>
         </section>
 
         <!-- Configuration -->
         <section id="config" class="scroll-mt-32">
             <div class="mb-12">
-                <h2 class="text-3xl font-bold tracking-tight mb-2">Integration</h2>
-                <p class="text-slate-500 font-medium">Add MCP server to your agent configuration files.</p>
+                <h2 class="text-3xl font-bold tracking-tight mb-2">Manual Integration (Optional)</h2>
+                <p class="text-slate-500 font-medium">Running <code>python3 setup.py</code> configures your client automatically. Below are manual JSON reference snippets.</p>
             </div>
 
             <div class="space-y-6">
@@ -252,7 +251,7 @@
                     <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
                         <div class="flex items-center gap-3">
                             <i class="fas fa-star text-slate-400"></i>
-                            <span class="text-sm font-bold">Google Antigravity Config (~/.gemini/settings.json)</span>
+                            <span class="text-sm font-bold">Google Antigravity Config (~/.gemini/antigravity/mcp_config.json)</span>
                         </div>
                         <button onclick="copyConfig('antigravity-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
                             <i class="far fa-copy"></i>
@@ -263,8 +262,7 @@
 {
   "mcpServers": {
     "voice": {
-      "command": "python3",
-      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+      "command": "/ABSOLUTE/PATH/TO/run.sh"
     }
   }
 }</pre>
@@ -284,7 +282,7 @@
                     </div>
                     <div class="dark-terminal p-4 mx-6 mb-6">
                         <pre id="claude-cli-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
-claude mcp add --scope user voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</pre>
+claude mcp add --scope user voice /ABSOLUTE/PATH/TO/run.sh</pre>
                     </div>
                 </div>
 
@@ -304,8 +302,7 @@ claude mcp add --scope user voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</
 {
   "mcpServers": {
     "voice": {
-      "command": "python3",
-      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+      "command": "/ABSOLUTE/PATH/TO/run.sh"
     }
   }
 }</pre>
