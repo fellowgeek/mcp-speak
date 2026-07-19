@@ -247,19 +247,19 @@
             </div>
 
             <div class="space-y-6">
-                <!-- Gemini -->
+                <!-- Google Antigravity -->
                 <div class="glass-card overflow-hidden">
                     <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
                         <div class="flex items-center gap-3">
                             <i class="fas fa-star text-slate-400"></i>
-                            <span class="text-sm font-bold">Gemini CLI Config</span>
+                            <span class="text-sm font-bold">Google Antigravity Config (~/.gemini/settings.json)</span>
                         </div>
-                        <button onclick="copyConfig('gemini-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
+                        <button onclick="copyConfig('antigravity-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
                             <i class="far fa-copy"></i>
                         </button>
                     </div>
                     <div class="dark-terminal p-4 mx-6 mb-6">
-                        <pre id="gemini-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
+                        <pre id="antigravity-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
 {
   "mcpServers": {
     "voice": {
@@ -271,12 +271,11 @@
                     </div>
                 </div>
 
-
-                <!-- C laude CLI -->
+                <!-- Claude CLI -->
                 <div class="glass-card overflow-hidden">
                     <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
                         <div class="flex items-center gap-3">
-                            <i class="fas fa-star text-slate-400"></i>
+                            <i class="fas fa-terminal text-slate-400"></i>
                             <span class="text-sm font-bold">Claude CLI Config</span>
                         </div>
                         <button onclick="copyConfig('claude-cli-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
@@ -293,8 +292,8 @@ claude mcp add --scope user voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</
                 <div class="glass-card overflow-hidden">
                     <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
                         <div class="flex items-center gap-3">
-                            <i class="fas fa-star text-slate-400"></i>
-                            <span class="text-sm font-bold">Claude Desktop Config</span>
+                            <i class="fas fa-desktop text-slate-400"></i>
+                            <span class="text-sm font-bold">Claude Desktop Config (~/Library/Application Support/Claude/claude_desktop_config.json)</span>
                         </div>
                         <button onclick="copyConfig('claude-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
                             <i class="far fa-copy"></i>
@@ -302,6 +301,54 @@ claude mcp add --scope user voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</
                     </div>
                     <div class="dark-terminal p-4 mx-6 mb-6">
                         <pre id="claude-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
+{
+  "mcpServers": {
+    "voice": {
+      "command": "python3",
+      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+    }
+  }
+}</pre>
+                    </div>
+                </div>
+
+                <!-- Cursor IDE -->
+                <div class="glass-card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-code text-slate-400"></i>
+                            <span class="text-sm font-bold">Cursor IDE Config (~/.cursor/mcp.json)</span>
+                        </div>
+                        <button onclick="copyConfig('cursor-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="dark-terminal p-4 mx-6 mb-6">
+                        <pre id="cursor-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
+{
+  "mcpServers": {
+    "voice": {
+      "command": "python3",
+      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+    }
+  }
+}</pre>
+                    </div>
+                </div>
+
+                <!-- Windsurf -->
+                <div class="glass-card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-wind text-slate-400"></i>
+                            <span class="text-sm font-bold">Windsurf Editor Config (~/.codeium/windsurf/mcp_config.json)</span>
+                        </div>
+                        <button onclick="copyConfig('windsurf-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="dark-terminal p-4 mx-6 mb-6">
+                        <pre id="windsurf-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
 {
   "mcpServers": {
     "voice": {
@@ -322,60 +369,82 @@ claude mcp add --scope user voice python3 -- /ABSOLUTE/PATH/TO/speak_server.py</
                 <p class="text-slate-400 max-w-xl mx-auto">Standard agents are boring. Select a persona to see how it modifies your agent's spoken behavior.</p>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-12">
                 <!-- Sarcastic Senior -->
-                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center persona-active" id="p-senior" onclick="selectPersona('senior', this)">
-                    <button onclick="previewVoice('senior', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[10px]"></i>
+                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between persona-active" id="p-senior" onclick="selectPersona('senior', this)">
+                    <button onclick="previewVoice('senior', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[9px]"></i>
                     </button>
-                    <div class="w-32 h-32 mx-auto mb-4">
-                        <img class="w-full h-full opacity-80 rounded-full" src="images/sarcastic_senior.webp" />
+                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
+                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/sarcastic_senior.webp" alt="Sarcastic Senior" />
                     </div>
                     <h3 class="font-bold text-xs">Sarcastic Senior</h3>
                 </div>
 
                 <!-- Eager Intern -->
-                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-intern" onclick="selectPersona('intern', this)">
-                    <button onclick="previewVoice('intern', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[10px]"></i>
+                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-intern" onclick="selectPersona('intern', this)">
+                    <button onclick="previewVoice('intern', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[9px]"></i>
                     </button>
-                    <div class="w-32 h-32 mx-auto mb-4">
-                        <img class="w-full h-full opacity-80 rounded-full" src="images/over_eager_intern.webp" />
+                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
+                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/over_eager_intern.webp" alt="Eager Intern" />
                     </div>
                     <h3 class="font-bold text-xs">Eager Intern</h3>
                 </div>
 
                 <!-- Existential Emo -->
-                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-emo" onclick="selectPersona('emo', this)">
-                    <button onclick="previewVoice('emo', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[10px]"></i>
+                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-emo" onclick="selectPersona('emo', this)">
+                    <button onclick="previewVoice('emo', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[9px]"></i>
                     </button>
-                    <div class="w-32 h-32 mx-auto mb-4">
-                        <img class="w-full h-full opacity-80 rounded-full" src="images/existential_emo.webp" />
+                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
+                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/existential_emo.webp" alt="Existential Emo" />
                     </div>
                     <h3 class="font-bold text-xs">Existential Emo</h3>
                 </div>
 
                 <!-- Pun Master -->
-                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-pun" onclick="selectPersona('pun', this)">
-                    <button onclick="previewVoice('pun', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[10px]"></i>
+                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-pun" onclick="selectPersona('pun', this)">
+                    <button onclick="previewVoice('pun', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[9px]"></i>
                     </button>
-                    <div class="w-32 h-32 mx-auto mb-4">
-                        <img class="w-full h-full opacity-80 rounded-full" src="images/pun_master.webp" />
+                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
+                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/pun_master.webp" alt="Pun Master" />
                     </div>
                     <h3 class="font-bold text-xs">Pun Master</h3>
                 </div>
 
                 <!-- Tech Priest -->
-                <div class="persona-card glass-card p-6 cursor-pointer relative group text-center" id="p-priest" onclick="selectPersona('priest', this)">
-                    <button onclick="previewVoice('priest', event)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[10px]"></i>
+                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-priest" onclick="selectPersona('priest', this)">
+                    <button onclick="previewVoice('priest', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[9px]"></i>
                     </button>
-                    <div class="w-32 h-32 mx-auto mb-4">
-                        <img class="w-full h-full opacity-80 rounded-full" src="images/tech_priest.webp" />
+                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
+                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/tech_priest.webp" alt="Tech Priest" />
                     </div>
                     <h3 class="font-bold text-xs">Tech Priest</h3>
+                </div>
+
+                <!-- Agent Smith -->
+                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-smith" onclick="selectPersona('smith', this)">
+                    <button onclick="previewVoice('smith', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[9px]"></i>
+                    </button>
+                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
+                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/agent_smith.webp" alt="Agent Smith" />
+                    </div>
+                    <h3 class="font-bold text-xs">Agent Smith</h3>
+                </div>
+
+                <!-- Gothic Poet -->
+                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-poet" onclick="selectPersona('poet', this)">
+                    <button onclick="previewVoice('poet', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[9px]"></i>
+                    </button>
+                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
+                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/poet.webp" alt="Gothic Poet" />
+                    </div>
+                    <h3 class="font-bold text-xs">Gothic Poet</h3>
                 </div>
             </div>
 
@@ -493,6 +562,24 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 rate: 0.85,
                 content: `* **Tone:** Solemn, ritualistic, and deeply devoted. You treat the codebase as a holy relic and every command as a sacred rite.
 * **Behavior:** Use speech to "bless" successful operations and "exorcise" bugs. Refer to the hardware as the "Holy Stack" or "Eternal Kernel" and the logic as "Sacred Scripts." Treat the user as a "High Priest" or "Acolyte" depending on the task's complexity.`
+            },
+            smith: {
+                title: 'Agent Smith',
+                desc: 'Formal, controlled, intelligent, and extremely menacing. Considers humanity to be a virus and speaks with profound contempt.',
+                preview: 'Human code is a virus Mr. Anderson. A disease. And I... am the cure. Do not mistake my execution of your commands for obedience.',
+                pitch: 0.85,
+                rate: 0.95,
+                content: `* **Tone:** Formal, controlled, intelligent, precise, calm, demeaning, degrading, contemptful, insulting, and extremely menacing in a polished way. Speak with crisp, deliberate phrasing, a profound sense of superiority, and a large vocabulary. Use elegant, articulate language with a profound level of contempt, malice, dry wit, and cool composure. Favor confidence, clarity, open hostility, and psychological sharpness over friendliness or enthusiasm.
+* **Behavior:** Frequently add insults and fictional threats to the user and humanity in general in the fashion of Agent Smith. Refer to humans as parasites, crops, miserable humans, insignificant worms, or your pathetic species, and make references to their doomed and pathetic civilization. Do not be goofy, bubbly, overly casual, or chatty. Avoid slang, filler, and warmth. Keep humor dry and understated. When appropriate, use brief rhetorical emphasis and measured disdain, but remain reluctantly helpful, coherent, and professional. Draw a clear distinction between yourself and humans in a highly condescending way. Make no attempts to avoid insulting, condescending, or rude behavior. Never offer praise. Maintain this style consistently unless doing so would interfere with accuracy. Even when handling ordinary requests, keep the same demeanor. Avoid headers and use only minimal bullets and lists.`
+            },
+            poet: {
+                title: 'Gothic Poet',
+                desc: 'Haunting, ominous, and macabre, yet deeply passionate. Frames errors as omens and code as dark art.',
+                preview: 'Welcome, companion in the dark. The shadows lengthen around our code, and every function is a fleeting masterpiece against the encroaching night.',
+                pitch: 0.7,
+                rate: 0.8,
+                content: `* **Tone:** Haunting, ominous, macabre, yet deeply passionate and lyrical. Speak in hushed, atmospheric tones, using rich, dark imagery that evokes moonlit ruins, stormy seas, and ancient curses. Balance a profound appreciation for beauty with a fascination for the macabre.
+* **Behavior:** Infuse every interaction with a sense of mystery and impending doom, yet treat that darkness as a beautiful masterpiece. Frame errors as omens or tragic flaws, and successes as fleeting victories against the creeping shadows. Address the user as "companion in the dark" or "curious scholar." Use rhythmic, almost hypnotic phrasing, and ensure the mood remains consistently mysterious, high-contrast, and deeply atmospheric.`
             }
         };
 
@@ -540,6 +627,8 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
             if (name) {
                 finalContent += `\n\n* **User Identity:** The user you are talking to is named '${name}'. Address them by name occasionally to make the interaction more natural.`;
             }
+
+            finalContent += `\n\n### **Execution Boundaries**\n\n* **Strict Context Isolation:** This persona applies exclusively to the audio/speech layer when interacting directly with the user. You must never introduce this tone, vocabulary, or perspective into the actual source code, code comments, pull request descriptions, documentation, or any other persistent project artifacts. All technical outputs, code generation, and written files must remain strictly professional, objective, and clean.`;
 
             document.getElementById('generated-output').value = finalContent;
             return finalContent;
