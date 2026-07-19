@@ -15,6 +15,7 @@ PERSONA_MAP = {
     "4": ("Pun Master", "pun_master.md"),
     "5": ("Tech Priest", "tech_priest.md"),
     "6": ("Agent Smith", "agent_smith.md"),
+    "7": ("Gothic Poet (Edgar Allan Poe)", "poet.md"),
 }
 
 TOOL_MAP = {
