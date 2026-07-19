@@ -19,12 +19,12 @@ PERSONA_MAP = {
 }
 
 TOOL_MAP = {
-    "1": ("Google Antigravity (~/.gemini/antigravity/mcp_config.json)", Path("~/.gemini/antigravity/mcp_config.json"), "AGENTS.md"),
-    "2": ("Claude Desktop (~/Library/Application Support/Claude/claude_desktop_config.json)", Path("~/Library/Application Support/Claude/claude_desktop_config.json"), "AGENTS.md"),
-    "3": ("Claude Code CLI (~/.claude/config.json)", Path("~/.claude/config.json"), "AGENTS.md"),
-    "4": ("Cursor IDE (~/.cursor/mcp.json)", Path("~/.cursor/mcp.json"), ".cursorrules"),
-    "5": ("Windsurf Editor (~/.codeium/windsurf/mcp_config.json)", Path("~/.codeium/windsurf/mcp_config.json"), "AGENTS.md"),
-    "6": ("Auto-detect & Configure All Installed Tools", None, "AGENTS.md"),
+    "1": ("Google Antigravity (~/.gemini/antigravity)", Path("~/.gemini/antigravity/mcp_config.json"), "AGENTS.md", Path("~/.gemini/GEMINI.md")),
+    "2": ("Claude Desktop (~/.claude)", Path("~/Library/Application Support/Claude/claude_desktop_config.json"), "AGENTS.md", Path("~/.claude/CLAUDE.md")),
+    "3": ("Claude Code CLI (~/.claude)", Path("~/.claude/config.json"), "AGENTS.md", Path("~/.claude/CLAUDE.md")),
+    "4": ("Cursor IDE (~/.cursor)", Path("~/.cursor/mcp.json"), ".cursorrules", Path("~/.cursorrules")),
+    "5": ("Windsurf Editor (~/.codeium/windsurf)", Path("~/.codeium/windsurf/mcp_config.json"), "AGENTS.md", Path("~/.codeium/windsurf/memories/global_rules.md")),
+    "6": ("Auto-detect & Configure All Installed Tools", None, "AGENTS.md", None),
 }
 
 def print_banner():
@@ -38,7 +38,7 @@ def get_interactive_choice(options, prompt_text, default_key="1"):
         label = tuple_val[0]
         default_indicator = " (default)" if key == default_key else ""
         print(f"  [{key}] {label}{default_indicator}")
-    
+
     choice = input(f"\nSelect option [1-{len(options)}] (default {default_key}): ").strip()
     if not choice:
         choice = default_key
@@ -54,7 +54,7 @@ def inject_mcp_config(config_path: Path, run_sh_path: Path):
                 data = json.load(f)
         except Exception:
             data = {}
-            
+
     if "mcpServers" not in data or not isinstance(data["mcpServers"], dict):
         data["mcpServers"] = {}
 
@@ -72,27 +72,44 @@ def main():
     parser.add_argument("--target", help="Custom target agent instructions file path (e.g. AGENTS.md)")
     parser.add_argument("--persona", help="Persona file name (e.g. agent_smith.md or agent_smith)")
     parser.add_argument("--name", help="User's name for personalized address")
+    parser.add_argument("--global", dest="is_global", action="store_true", help="Install persona globally across user profile (default)")
+    parser.add_argument("--local", dest="is_global", action="store_false", help="Install persona locally in current workspace")
     parser.add_argument("--no-config-edit", action="store_true", help="Skip editing tool JSON configuration files")
     parser.add_argument("--non-interactive", action="store_true", help="Run in non-interactive mode using defaults")
+    parser.set_defaults(is_global=True)
     args = parser.parse_args()
 
     if not args.non_interactive and not (args.target and args.persona):
         print_banner()
 
     # 1. Determine Tool & Configuration JSON Target
-    tool_label, config_json_path, default_prompt_file = TOOL_MAP["6"] # Default All
+    tool_label, config_json_path, local_prompt_file, global_prompt_file = TOOL_MAP["6"] # Default All
+    selected_tool_key = "6"
     if args.tool and args.tool in TOOL_MAP:
-        tool_label, config_json_path, default_prompt_file = TOOL_MAP[args.tool]
+        selected_tool_key = args.tool
+        tool_label, config_json_path, local_prompt_file, global_prompt_file = TOOL_MAP[args.tool]
     elif not args.non_interactive and not args.target:
-        tool_label, config_json_path, default_prompt_file = get_interactive_choice(
+        selected_tool_key = "1" # Default to 1 (Antigravity)
+        tool_label, config_json_path, local_prompt_file, global_prompt_file = get_interactive_choice(
             TOOL_MAP, "Select your primary AI Coding Tool:", default_key="1"
         )
 
-    # Determine prompt target path
+    # Determine prompt target path(s)
+    target_paths = []
     if args.target:
-        target_path = Path(args.target)
+        target_paths.append(Path(args.target).expanduser())
+    elif args.is_global:
+        if selected_tool_key == "6":
+            # Target global paths for all tools
+            for key, (_, _, _, g_path) in TOOL_MAP.items():
+                if g_path:
+                    target_paths.append(g_path.expanduser())
+        elif global_prompt_file:
+            target_paths.append(global_prompt_file.expanduser())
+        else:
+            target_paths.append(Path(local_prompt_file).expanduser())
     else:
-        target_path = Path(default_prompt_file)
+        target_paths.append(Path(local_prompt_file))
 
     # 2. Determine Persona
     if args.persona:
@@ -106,7 +123,7 @@ def main():
         persona_file = PERSONAS_DIR / "agent_smith.md"
         persona_label = "Agent Smith"
     else:
-        label, filename = get_interactive_choice(PERSONA_MAP, "\nSelect agent persona:", default_key="6")
+        label, filename = get_interactive_choice(PERSONA_MAP, "\nSelect agent persona:", default_key="1")
         persona_file = PERSONAS_DIR / filename
         persona_label = label
 
@@ -127,9 +144,15 @@ def main():
         name_block = f"\n\n### **Name Personalization**\n*   **User Name:** Address the user as '{user_name}' occasionally to make the interaction natural."
         full_content += name_block
 
-    # Write prompt to target file
-    target_path.parent.mkdir(parents=True, exist_ok=True)
-    target_path.write_text(full_content + "\n")
+    # Write prompt to target file(s)
+    written_prompt_paths = []
+    for tp in target_paths:
+        try:
+            tp.parent.mkdir(parents=True, exist_ok=True)
+            tp.write_text(full_content + "\n")
+            written_prompt_paths.append(tp.resolve())
+        except Exception as e:
+            print(f"⚠️ Could not write persona to {tp}: {e}", file=sys.stderr)
 
     # Ensure run.sh is executable
     run_sh_path = (PROJECT_DIR / "run.sh").resolve()
@@ -138,7 +161,9 @@ def main():
         run_sh_path.chmod(current_mode | 0o111)
 
     print("\n--------------------------------------------------")
-    print(f"✅ Successfully wrote persona '{persona_label}' to {target_path.resolve()}")
+    print(f"✅ Successfully wrote persona '{persona_label}' globally to:")
+    for wp in written_prompt_paths:
+        print(f"   • {wp}")
 
     # 4. Automatically inject MCP Server Config into tool JSON files
     updated_configs = []
@@ -148,7 +173,7 @@ def main():
             target_configs.append(config_json_path)
         else:
             # Auto-detect / configure all known tools
-            for key, (_, cfg_p, _) in TOOL_MAP.items():
+            for key, (_, cfg_p, _, _) in TOOL_MAP.items():
                 if cfg_p:
                     target_configs.append(cfg_p)
 
