@@ -3,6 +3,8 @@ import os
 import sys
 import json
 import argparse
+import subprocess
+import shutil
 from pathlib import Path
 
 PROJECT_DIR = Path(__file__).parent.resolve()
@@ -21,7 +23,7 @@ PERSONA_MAP = {
 TOOL_MAP = {
     "1": ("Google Antigravity (~/.gemini/antigravity)", Path("~/.gemini/antigravity/mcp_config.json"), "AGENTS.md", Path("~/.gemini/GEMINI.md")),
     "2": ("Claude Desktop (~/.claude)", Path("~/Library/Application Support/Claude/claude_desktop_config.json"), "AGENTS.md", Path("~/.claude/CLAUDE.md")),
-    "3": ("Claude Code CLI (~/.claude)", Path("~/.claude/config.json"), "AGENTS.md", Path("~/.claude/CLAUDE.md")),
+    "3": ("Claude Code CLI", None, "AGENTS.md", Path("~/.claude/CLAUDE.md")),
     "4": ("Cursor IDE (~/.cursor)", Path("~/.cursor/mcp.json"), ".cursorrules", Path("~/.cursorrules")),
     "5": ("Windsurf Editor (~/.codeium/windsurf)", Path("~/.codeium/windsurf/mcp_config.json"), "AGENTS.md", Path("~/.codeium/windsurf/memories/global_rules.md")),
     "6": ("Auto-detect & Configure All Installed Tools", None, "AGENTS.md", None),
@@ -40,9 +42,21 @@ def get_interactive_choice(options, prompt_text, default_key="1"):
         print(f"  [{key}] {label}{default_indicator}")
 
     choice = input(f"\nSelect option [1-{len(options)}] (default {default_key}): ").strip()
-    if not choice:
+    if choice not in options:
         choice = default_key
-    return options.get(choice, options[default_key])
+    return options[choice]
+
+def get_interactive_choice_key(options, prompt_text, default_key="1"):
+    print(prompt_text)
+    for key, tuple_val in options.items():
+        label = tuple_val[0]
+        default_indicator = " (default)" if key == default_key else ""
+        print(f"  [{key}] {label}{default_indicator}")
+
+    choice = input(f"\nSelect option [1-{len(options)}] (default {default_key}): ").strip()
+    if choice not in options:
+        choice = default_key
+    return choice
 
 def inject_mcp_config(config_path: Path, run_sh_path: Path):
     path = config_path.expanduser()
@@ -66,6 +80,34 @@ def inject_mcp_config(config_path: Path, run_sh_path: Path):
         json.dump(data, f, indent=2)
     return path
 
+def find_claude_binary():
+    claude_bin = shutil.which("claude")
+    if claude_bin:
+        return claude_bin
+
+    candidates = [
+        Path.home() / ".local" / "bin" / "claude",
+        Path("/usr/local/bin/claude"),
+        Path("/opt/homebrew/bin/claude"),
+    ]
+    for candidate in candidates:
+        if candidate.exists() and candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
+
+def configure_claude_code(run_sh_path: Path):
+    claude_bin = find_claude_binary()
+    cmd_str = f"claude mcp add --scope user voice -- {run_sh_path}"
+    if claude_bin:
+        try:
+            cmd = [claude_bin, "mcp", "add", "--scope", "user", "voice", "--", str(run_sh_path)]
+            subprocess.run(cmd, capture_output=True, text=True, check=True)
+            return True, cmd_str
+        except Exception as e:
+            return False, f"Attempted '{cmd_str}' but failed: {e}"
+    else:
+        return False, f"Command to run manually: {cmd_str}"
+
 def main():
     parser = argparse.ArgumentParser(description="Interactive setup wizard for mcp-speak.")
     parser.add_argument("--tool", help="Target tool choice (1: Antigravity, 2: Claude Desktop, 3: Claude CLI, 4: Cursor, 5: Windsurf, 6: All)")
@@ -83,16 +125,15 @@ def main():
         print_banner()
 
     # 1. Determine Tool & Configuration JSON Target
-    tool_label, config_json_path, local_prompt_file, global_prompt_file = TOOL_MAP["6"] # Default All
-    selected_tool_key = "6"
+    selected_tool_key = "6" # Default All
     if args.tool and args.tool in TOOL_MAP:
         selected_tool_key = args.tool
-        tool_label, config_json_path, local_prompt_file, global_prompt_file = TOOL_MAP[args.tool]
     elif not args.non_interactive and not args.target:
-        selected_tool_key = "1" # Default to 1 (Antigravity)
-        tool_label, config_json_path, local_prompt_file, global_prompt_file = get_interactive_choice(
+        selected_tool_key = get_interactive_choice_key(
             TOOL_MAP, "Select your primary AI Coding Tool:", default_key="1"
         )
+
+    tool_label, config_json_path, local_prompt_file, global_prompt_file = TOOL_MAP[selected_tool_key]
 
     # Determine prompt target path(s)
     target_paths = []
@@ -165,36 +206,51 @@ def main():
     for wp in written_prompt_paths:
         print(f"   • {wp}")
 
-    # 4. Automatically inject MCP Server Config into tool JSON files
+    # 4. Automatically inject MCP Server Config into tool JSON files / CLI
     updated_configs = []
+    claude_cmd_result = None
     if not args.no_config_edit:
-        target_configs = []
-        if config_json_path:
-            target_configs.append(config_json_path)
-        else:
-            # Auto-detect / configure all known tools
+        if selected_tool_key == "3":
+            success, msg = configure_claude_code(run_sh_path)
+            claude_cmd_result = (success, msg)
+        elif selected_tool_key == "6":
             for key, (_, cfg_p, _, _) in TOOL_MAP.items():
                 if cfg_p:
-                    target_configs.append(cfg_p)
+                    try:
+                        updated_path = inject_mcp_config(cfg_p, run_sh_path)
+                        updated_configs.append(updated_path)
+                    except Exception as e:
+                        print(f"⚠️ Could not write config to {cfg_p}: {e}", file=sys.stderr)
+            success, msg = configure_claude_code(run_sh_path)
+            claude_cmd_result = (success, msg)
+        else:
+            if config_json_path:
+                try:
+                    updated_path = inject_mcp_config(config_json_path, run_sh_path)
+                    updated_configs.append(updated_path)
+                except Exception as e:
+                    print(f"⚠️ Could not write config to {config_json_path}: {e}", file=sys.stderr)
 
-        for cfg in target_configs:
-            try:
-                updated_path = inject_mcp_config(cfg, run_sh_path)
-                updated_configs.append(updated_path)
-            except Exception as e:
-                print(f"⚠️ Could not write config to {cfg}: {e}", file=sys.stderr)
-
-    if updated_configs:
-        print("\n🔧 Automatically configured MCP Server in:")
+    if updated_configs or (claude_cmd_result and claude_cmd_result[0]):
+        print("\n🔧 Automatically configured MCP Server:")
         for cfg_p in updated_configs:
-            print(f"   • {cfg_p}")
-    else:
-        print("\nNext Step: Add the following MCP server config to your client settings:")
-        print("\n```json")
+            print(f"   • Configured: {cfg_p}")
+        if claude_cmd_result and claude_cmd_result[0]:
+            print(f"   • Executed: {claude_cmd_result[1]}")
+
+    if claude_cmd_result and not claude_cmd_result[0]:
+        print(f"\n⚠️ {claude_cmd_result[1]}")
+
+    if not updated_configs and not (claude_cmd_result and claude_cmd_result[0]):
+        print("\nNext Step: Add the MCP server config to your client settings:")
+        print("\nFor JSON-based clients (Antigravity, Claude Desktop, Cursor, Windsurf):")
+        print("```json")
         print("{\n  \"mcpServers\": {\n    \"voice\": {")
         print(f"      \"command\": \"{run_sh_path}\"")
         print("    }\n  }\n}")
         print("```")
+        print("\nFor Claude Code CLI, run:")
+        print(f"  claude mcp add --scope user voice -- {run_sh_path}")
     print("--------------------------------------------------\n")
 
 if __name__ == "__main__":

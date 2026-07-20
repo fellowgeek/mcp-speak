@@ -54,7 +54,7 @@ Edit `~/.gemini/antigravity/mcp_config.json`:
 
 #### 2. Claude CLI (Claude Code)
 ```bash
-claude mcp add --scope user voice /ABSOLUTE/PATH/TO/run.sh
+claude mcp add --scope user voice -- /ABSOLUTE/PATH/TO/run.sh
 ```
 
 #### 3. Claude Desktop
