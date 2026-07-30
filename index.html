@@ -90,7 +90,8 @@
         body.light-mode .text-slate-500 { color: #52525b; }
         body.light-mode .bg-slate-950\/50 { background-color: var(--nav-bg); }
         body.light-mode .bg-slate-900\/40 { background-color: rgba(0, 0, 0, 0.02); }
-        body.light-mode #user-name {
+        body.light-mode #user-name,
+        body.light-mode #target-tool {
             background-color: var(--terminal-bg);
             color: var(--text-main);
             border-color: var(--border-soft);
@@ -184,7 +185,7 @@
             <span class="text-indigo-500">Sorry in advance.</span>
         </h1>
         <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-            A specialized Model Context Protocol server for MacOS. Give your agents direct access to the system voice engine for real-time interaction.
+            A specialized Model Context Protocol server for MacOS. Give your agents (like Google Antigravity, Claude Desktop, Cursor, Windsurf, or Codex) direct access to the system voice engine for real-time interaction.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="#install" class="btn-primary text-white px-8 py-4 rounded-xl font-bold transition shadow-xl hover:opacity-90">
@@ -242,7 +243,7 @@
         <section id="config" class="scroll-mt-32">
             <div class="mb-12">
                 <h2 class="text-3xl font-bold tracking-tight mb-2">Manual Integration (Optional)</h2>
-                <p class="text-slate-500 font-medium">Running <code>python3 setup.py</code> configures your client automatically. Below are manual JSON reference snippets.</p>
+                <p class="text-slate-500 font-medium">Running <code>python3 setup.py</code> configures your client automatically. Below are manual configuration reference snippets.</p>
             </div>
 
             <div class="space-y-6">
@@ -492,6 +493,16 @@ codex mcp add voice -- /ABSOLUTE/PATH/TO/run.sh</pre>
                                 <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">User Preference</label>
                                 <input type="text" id="user-name" placeholder="Enter your name" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
                             </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Target AI Tool</label>
+                                <select id="target-tool" onchange="updateTargetTool()" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                                    <option value="codex" selected>Codex (AGENTS.md)</option>
+                                    <option value="antigravity">Google Antigravity (GEMINI.md)</option>
+                                    <option value="claude">Claude (CLAUDE.md)</option>
+                                    <option value="cursor">Cursor (.cursorrules)</option>
+                                    <option value="windsurf">Windsurf (global_rules.md)</option>
+                                </select>
+                            </div>
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="include-base" checked class="w-4 h-4 rounded accent-indigo-500 cursor-pointer">
                                 <label for="include-base" class="text-sm font-semibold text-slate-300 cursor-pointer">Include Base Guidelines</label>
@@ -501,15 +512,16 @@ codex mcp add voice -- /ABSOLUTE/PATH/TO/run.sh</pre>
                         <div class="mt-12 flex flex-col">
                             <button onclick="copyGeneratedMarkdown(this)" class="btn-primary w-full text-white px-8 py-5 rounded-2xl font-bold transition flex items-center justify-center gap-3 active:scale-95 group">
                                 <i class="far fa-copy text-lg group-hover:rotate-6 transition-transform"></i>
-                                GENERATE AGENTS.MD
+                                <span id="gen-btn-text">GENERATE AGENTS.MD</span>
                             </button>
                             <p class="mt-4 text-[10px] text-center text-slate-500 font-bold uppercase tracking-widest">Updates dynamically based on selection</p>
                         </div>
                     </div>
 
                     <div class="h-full flex flex-col">
-                        <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Generated AGENTS.md</label>
+                        <label id="gen-label" class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Generated AGENTS.md</label>
                         <textarea id="generated-output" readonly class="w-full h-80 lg:h-full bg-slate-950/50 border border-white/10 rounded-2xl p-6 mono text-xs leading-relaxed focus:outline-none resize-none" placeholder="The sacred text will appear here..."></textarea>
+                        <p id="save-hint" class="mt-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest">Recommended path: Save in your project root or ~/.codex/AGENTS.md</p>
                     </div>
                 </div>
             </div>
@@ -616,6 +628,57 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
 * **Behavior:** Treat every code task as a midnight dreary, bugs as phantoms tapping at chamber doors, and successful builds as fleeting victories before creeping shadows return. Frequently weave in motifs like "quoth the raven", "nevermore", "midnight dreary", and "chamber door". Address the user as "curious scholar" or "companion in the dark".`
             }
         };
+
+        const tools = {
+            codex: {
+                name: 'Codex (Desktop & CLI)',
+                file: 'AGENTS.md',
+                path: 'Save in your project root or ~/.codex/AGENTS.md'
+            },
+            antigravity: {
+                name: 'Google Antigravity',
+                file: 'GEMINI.md',
+                path: 'Save as ~/.gemini/GEMINI.md'
+            },
+            claude: {
+                name: 'Claude (Desktop & CLI)',
+                file: 'CLAUDE.md',
+                path: 'Save as ~/.claude/CLAUDE.md'
+            },
+            cursor: {
+                name: 'Cursor IDE',
+                file: '.cursorrules',
+                path: 'Save in your project root as .cursorrules'
+            },
+            windsurf: {
+                name: 'Windsurf Editor',
+                file: 'global_rules.md',
+                path: 'Save as ~/.codeium/windsurf/memories/global_rules.md'
+            }
+        };
+
+        function updateTargetTool() {
+            const toolId = document.getElementById('target-tool').value;
+            const tool = tools[toolId];
+            
+            // Update button text
+            const btnText = document.getElementById('gen-btn-text');
+            if (btnText) {
+                btnText.innerText = `GENERATE ${tool.file.toUpperCase()}`;
+            }
+            
+            // Update textarea label
+            const label = document.getElementById('gen-label');
+            if (label) {
+                label.innerText = `Generated ${tool.file}`;
+            }
+            
+            // Update save path hint
+            const hint = document.getElementById('save-hint');
+            if (hint) {
+                hint.innerText = `Recommended path: ${tool.path}`;
+            }
+        }
 
         function selectPersona(id, element) {
             currentPersona = id;
@@ -724,9 +787,10 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
             moonIcon.classList.toggle('hidden', isLight);
         }
 
-        // Initialize with Sarcastic Senior and saved theme
+        // Initialize with Sarcastic Senior, target tool, and saved theme
         document.addEventListener('DOMContentLoaded', () => {
             selectPersona('senior', document.getElementById('p-senior'));
+            updateTargetTool();
 
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') {
