@@ -26,7 +26,9 @@ TOOL_MAP = {
     "3": ("Claude Code CLI", None, "AGENTS.md", Path("~/.claude/CLAUDE.md")),
     "4": ("Cursor IDE (~/.cursor)", Path("~/.cursor/mcp.json"), ".cursorrules", Path("~/.cursorrules")),
     "5": ("Windsurf Editor (~/.codeium/windsurf)", Path("~/.codeium/windsurf/mcp_config.json"), "AGENTS.md", Path("~/.codeium/windsurf/memories/global_rules.md")),
-    "6": ("Auto-detect & Configure All Installed Tools", None, "AGENTS.md", None),
+    "6": ("Codex Desktop (~/.codex)", Path("~/.codex/config.toml"), "AGENTS.md", Path("~/.codex/AGENTS.md")),
+    "7": ("Codex CLI", None, "AGENTS.md", Path("~/.codex/AGENTS.md")),
+    "8": ("Auto-detect & Configure All Installed Tools", None, "AGENTS.md", None),
 }
 
 def print_banner():
@@ -58,8 +60,62 @@ def get_interactive_choice_key(options, prompt_text, default_key="1"):
         choice = default_key
     return choice
 
+def inject_mcp_config_toml(path: Path, run_sh_path: Path):
+    path = path.expanduser()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    
+    command_str = str(run_sh_path).replace("\\", "\\\\") # escape backslashes for TOML
+    
+    if not path.exists():
+        content = f'[mcp_servers.voice]\ncommand = "{command_str}"\n'
+        path.write_text(content, encoding="utf-8")
+        return path
+        
+    lines = path.read_text(encoding="utf-8").splitlines()
+    
+    # Find where [mcp_servers.voice] starts
+    section_header = "[mcp_servers.voice]"
+    section_index = -1
+    for i, line in enumerate(lines):
+        if line.strip() == section_header:
+            section_index = i
+            break
+            
+    if section_index != -1:
+        # Section exists. Find if command exists within this section
+        command_index = -1
+        next_section_index = len(lines)
+        for i in range(section_index + 1, len(lines)):
+            line_strip = lines[i].strip()
+            if line_strip.startswith("["):
+                next_section_index = i
+                break
+            if line_strip.startswith("command") and "=" in line_strip:
+                command_index = i
+                
+        if command_index != -1:
+            # Replace existing command line
+            orig_line = lines[command_index]
+            indent = orig_line[:len(orig_line) - len(orig_line.lstrip())]
+            lines[command_index] = f'{indent}command = "{command_str}"'
+        else:
+            # Command not found, insert it right after the header
+            lines.insert(section_index + 1, f'command = "{command_str}"')
+    else:
+        # Section doesn't exist. Append it to the end of the file.
+        if lines and lines[-1].strip():
+            lines.append("")
+        lines.append(section_header)
+        lines.append(f'command = "{command_str}"')
+        
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
 def inject_mcp_config(config_path: Path, run_sh_path: Path):
     path = config_path.expanduser()
+    if path.suffix == ".toml":
+        return inject_mcp_config_toml(path, run_sh_path)
+        
     path.parent.mkdir(parents=True, exist_ok=True)
     data = {}
     if path.exists():
@@ -108,9 +164,37 @@ def configure_claude_code(run_sh_path: Path):
     else:
         return False, f"Command to run manually: {cmd_str}"
 
+def find_codex_binary():
+    codex_bin = shutil.which("codex")
+    if codex_bin:
+        return codex_bin
+
+    candidates = [
+        Path.home() / ".local" / "bin" / "codex",
+        Path("/usr/local/bin/codex"),
+        Path("/opt/homebrew/bin/codex"),
+    ]
+    for candidate in candidates:
+        if candidate.exists() and candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
+
+def configure_codex_cli(run_sh_path: Path):
+    codex_bin = find_codex_binary()
+    cmd_str = f"codex mcp add voice -- {run_sh_path}"
+    if codex_bin:
+        try:
+            cmd = [codex_bin, "mcp", "add", "voice", "--", str(run_sh_path)]
+            subprocess.run(cmd, capture_output=True, text=True, check=True)
+            return True, cmd_str
+        except Exception as e:
+            return False, f"Attempted '{cmd_str}' but failed: {e}"
+    else:
+        return False, f"Command to run manually: {cmd_str}"
+
 def main():
     parser = argparse.ArgumentParser(description="Interactive setup wizard for mcp-speak.")
-    parser.add_argument("--tool", help="Target tool choice (1: Antigravity, 2: Claude Desktop, 3: Claude CLI, 4: Cursor, 5: Windsurf, 6: All)")
+    parser.add_argument("--tool", help="Target tool choice (1: Antigravity, 2: Claude Desktop, 3: Claude CLI, 4: Cursor, 5: Windsurf, 6: Codex Desktop, 7: Codex CLI, 8: All)")
     parser.add_argument("--target", help="Custom target agent instructions file path (e.g. AGENTS.md)")
     parser.add_argument("--persona", help="Persona file name (e.g. agent_smith.md or agent_smith)")
     parser.add_argument("--name", help="User's name for personalized address")
@@ -125,7 +209,7 @@ def main():
         print_banner()
 
     # 1. Determine Tool & Configuration JSON Target
-    selected_tool_key = "6" # Default All
+    selected_tool_key = "8" # Default All
     if args.tool and args.tool in TOOL_MAP:
         selected_tool_key = args.tool
     elif not args.non_interactive and not args.target:
@@ -140,7 +224,7 @@ def main():
     if args.target:
         target_paths.append(Path(args.target).expanduser())
     elif args.is_global:
-        if selected_tool_key == "6":
+        if selected_tool_key == "8":
             # Target global paths for all tools
             for key, (_, _, _, g_path) in TOOL_MAP.items():
                 if g_path:
@@ -206,14 +290,17 @@ def main():
     for wp in written_prompt_paths:
         print(f"   • {wp}")
 
-    # 4. Automatically inject MCP Server Config into tool JSON files / CLI
+    # 4. Automatically inject MCP Server Config into tool configuration files / CLI
     updated_configs = []
-    claude_cmd_result = None
+    cli_cmd_results = []
     if not args.no_config_edit:
         if selected_tool_key == "3":
             success, msg = configure_claude_code(run_sh_path)
-            claude_cmd_result = (success, msg)
-        elif selected_tool_key == "6":
+            cli_cmd_results.append((success, msg))
+        elif selected_tool_key == "7":
+            success, msg = configure_codex_cli(run_sh_path)
+            cli_cmd_results.append((success, msg))
+        elif selected_tool_key == "8":
             for key, (_, cfg_p, _, _) in TOOL_MAP.items():
                 if cfg_p:
                     try:
@@ -222,7 +309,9 @@ def main():
                     except Exception as e:
                         print(f"⚠️ Could not write config to {cfg_p}: {e}", file=sys.stderr)
             success, msg = configure_claude_code(run_sh_path)
-            claude_cmd_result = (success, msg)
+            cli_cmd_results.append((success, msg))
+            success, msg = configure_codex_cli(run_sh_path)
+            cli_cmd_results.append((success, msg))
         else:
             if config_json_path:
                 try:
@@ -231,17 +320,20 @@ def main():
                 except Exception as e:
                     print(f"⚠️ Could not write config to {config_json_path}: {e}", file=sys.stderr)
 
-    if updated_configs or (claude_cmd_result and claude_cmd_result[0]):
+    has_successful_cli = any(res[0] for res in cli_cmd_results)
+    if updated_configs or has_successful_cli:
         print("\n🔧 Automatically configured MCP Server:")
         for cfg_p in updated_configs:
             print(f"   • Configured: {cfg_p}")
-        if claude_cmd_result and claude_cmd_result[0]:
-            print(f"   • Executed: {claude_cmd_result[1]}")
+        for success, msg in cli_cmd_results:
+            if success:
+                print(f"   • Executed: {msg}")
 
-    if claude_cmd_result and not claude_cmd_result[0]:
-        print(f"\n⚠️ {claude_cmd_result[1]}")
+    for success, msg in cli_cmd_results:
+        if not success:
+            print(f"\n⚠️ {msg}")
 
-    if not updated_configs and not (claude_cmd_result and claude_cmd_result[0]):
+    if not updated_configs and not has_successful_cli:
         print("\nNext Step: Add the MCP server config to your client settings:")
         print("\nFor JSON-based clients (Antigravity, Claude Desktop, Cursor, Windsurf):")
         print("```json")
@@ -249,8 +341,15 @@ def main():
         print(f"      \"command\": \"{run_sh_path}\"")
         print("    }\n  }\n}")
         print("```")
+        print("\nFor TOML-based clients (Codex Desktop):")
+        print("```toml")
+        print("[mcp_servers.voice]")
+        print(f"command = \"{run_sh_path}\"")
+        print("```")
         print("\nFor Claude Code CLI, run:")
         print(f"  claude mcp add --scope user voice -- {run_sh_path}")
+        print("\nFor Codex CLI, run:")
+        print(f"  codex mcp add voice -- {run_sh_path}")
     print("--------------------------------------------------\n")
 
 if __name__ == "__main__":

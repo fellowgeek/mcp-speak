@@ -2,3 +2,4 @@
 .GEMINI.md
 AGENTS.md
 .claude/settings.local.json
+__pycache__/setup.cpython-314.pyc

@@ -1,6 +1,6 @@
 # Speech MCP Server for MacOS
 
-This is a Model Context Protocol (MCP) server that provides text-to-speech capabilities using the native MacOS `say` command. It allows AI agents (like Google Antigravity, Claude Desktop, Cursor, or Windsurf) to speak to you directly.
+This is a Model Context Protocol (MCP) server that provides text-to-speech capabilities using the native MacOS `say` command. It allows AI agents (like Google Antigravity, Claude Desktop, Cursor, Windsurf, or Codex) to speak to you directly.
 
 **Note: This server is strictly for MacOS systems.**
 
@@ -91,6 +91,18 @@ Edit `~/.codeium/windsurf/mcp_config.json`:
     }
   }
 }
+```
+
+#### 6. Codex Desktop
+Edit `~/.codex/config.toml`:
+```toml
+[mcp_servers.voice]
+command = "/ABSOLUTE/PATH/TO/run.sh"
+```
+
+#### 7. Codex CLI
+```bash
+codex mcp add voice -- /ABSOLUTE/PATH/TO/run.sh
 ```
 
 ## Agent Personalization (AGENTS.md / GEMINI.md / CLAUDE.md)
