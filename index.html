@@ -326,8 +326,7 @@ claude mcp add --scope user voice -- /ABSOLUTE/PATH/TO/run.sh</pre>
 {
   "mcpServers": {
     "voice": {
-      "command": "python3",
-      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+      "command": "/ABSOLUTE/PATH/TO/run.sh"
     }
   }
 }</pre>
@@ -350,8 +349,7 @@ claude mcp add --scope user voice -- /ABSOLUTE/PATH/TO/run.sh</pre>
 {
   "mcpServers": {
     "voice": {
-      "command": "python3",
-      "args": ["/ABSOLUTE/PATH/TO/speak_server.py"]
+      "command": "/ABSOLUTE/PATH/TO/run.sh"
     }
   }
 }</pre>
@@ -372,8 +370,7 @@ claude mcp add --scope user voice -- /ABSOLUTE/PATH/TO/run.sh</pre>
                     <div class="dark-terminal p-4 mx-6 mb-6">
                         <pre id="codex-toml" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
 [mcp_servers.voice]
-command = "python3"
-args = ["/ABSOLUTE/PATH/TO/speak_server.py"]</pre>
+command = "/ABSOLUTE/PATH/TO/run.sh"</pre>
                     </div>
                 </div>
 
