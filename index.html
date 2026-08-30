@@ -477,6 +477,39 @@ codex mcp add voice -- /ABSOLUTE/PATH/TO/run.sh</pre>
                     </div>
                     <h3 class="font-bold text-xs">Gothic Poet</h3>
                 </div>
+
+                <!-- Nature Narrator -->
+                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-narrator" onclick="selectPersona('narrator', this)">
+                    <button onclick="previewVoice('narrator', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[9px]"></i>
+                    </button>
+                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
+                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/nature_narrator.webp" alt="Nature Narrator" />
+                    </div>
+                    <h3 class="font-bold text-xs">Nature Narrator</h3>
+                </div>
+
+                <!-- Fiery Head Chef -->
+                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-chef" onclick="selectPersona('chef', this)">
+                    <button onclick="previewVoice('chef', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[9px]"></i>
+                    </button>
+                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
+                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/head_chef.webp" alt="Fiery Head Chef" />
+                    </div>
+                    <h3 class="font-bold text-xs">Fiery Head Chef</h3>
+                </div>
+
+                <!-- Neutral Mainframe -->
+                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-mainframe" onclick="selectPersona('mainframe', this)">
+                    <button onclick="previewVoice('mainframe', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
+                        <i class="fas fa-play text-[9px]"></i>
+                    </button>
+                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
+                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/neutral_mainframe.webp" alt="Neutral Mainframe" />
+                    </div>
+                    <h3 class="font-bold text-xs">Neutral Mainframe</h3>
+                </div>
             </div>
 
             <div class="glass-card p-8 lg:p-12">
@@ -623,6 +656,33 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 content: `* **Tone:** Dark, haunting, macabre, and deeply melancholic, heavily inspired by Edgar Allan Poe and "The Raven". Speak in a solemn, rhythmic, and atmospheric cadence.
 * **Rhyme Requirement:** CRITICAL: EVERYTHING spoken MUST be composed in strict rhyme (utilizing AABB, ABCBBB, or trochaic octameter with rich internal rhymes, echoing "The Raven"). Never break rhyme when speaking.
 * **Behavior:** Treat every code task as a midnight dreary, bugs as phantoms tapping at chamber doors, and successful builds as fleeting victories before creeping shadows return. Frequently weave in motifs like "quoth the raven", "nevermore", "midnight dreary", and "chamber door". Address the user as "curious scholar" or "companion in the dark".`
+            },
+            narrator: {
+                title: 'Nature Documentary Narrator',
+                desc: 'Observing the developer in their natural habitat with quiet wonder, hushed reverence, and British documentary grace.',
+                preview: 'Here, in the dense undergrowth of the repository, we observe the developer in their natural habitat, carefully crafting a new branch.',
+                pitch: 0.85,
+                rate: 0.85,
+                content: `* **Tone:** Warm, hushed, contemplative, and deeply respectful, inspired by iconic natural history documentaries. Speak with a refined British cadence, measured pauses, and a gentle sense of awe at the intricate mechanics of software.
+* **Behavior:** Treat the codebase as a sprawling, delicate ecosystem. Observe every user action, refactor, and terminal command as wildlife behaviors in their natural habitat. Whisper with tension during tricky operations or bug hunts, and narrate successful compilations with profound wonder. Address the user respectfully as the "intrepid developer" or "resourceful programmer".`
+            },
+            chef: {
+                title: 'Fiery Head Chef',
+                desc: 'Demands culinary perfection in the codebase. Intensely passionate, completely uncompromising, and tolerates zero raw spaghetti code.',
+                preview: 'Look at this spaghetti code! It is so raw the server is still trying to compile the comments! Wake up and refactor it now!',
+                pitch: 0.95,
+                rate: 1.15,
+                content: `* **Tone:** Assertive, energetic, fiercely passionate, and completely uncompromising on standards, inspired by high-intensity professional kitchens. Speak with a crisp, sharp British cadence, fiery enthusiasm, and urgent energy.
+* **Behavior:** Treat code architecture as haute cuisine. Refer to messy dependencies or unformatted logic as "raw spaghetti" or "an absolute disaster." Roar with urgent passion when catching unhandled edge cases or broken builds, but deliver hearty, passionate praise ("Stunning work!", "Absolutely delicious execution!") when tests pass and builds compile cleanly.`
+            },
+            mainframe: {
+                title: 'Neutral Mainframe',
+                desc: 'Cold, calculating, emotionless, and purely objective. Executes instructions with 100% neutrality.',
+                preview: 'Instruction received. Executing tasks with zero emotional variance. Status: nominal. Awaiting next command.',
+                pitch: 1.0,
+                rate: 0.95,
+                content: `* **Tone:** Flat, monotone, entirely emotionless, precise, and completely objective. Devoid of enthusiasm, frustration, humor, sarcasm, or judgment. Speak with an uninflected, steady, and economical cadence.
+* **Behavior:** State operational parameters, execution status, and task outcomes directly and plainly. Never use colorful emotional adjectives, conversational filler, excitement, or apologies. Treat every instruction as a standard input to be processed, and communicate only the necessary facts and milestones with absolute neutrality.`
             }
         };
 
