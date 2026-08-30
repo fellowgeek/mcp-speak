@@ -6,43 +6,43 @@
   "voice_designs": {
     "agent_smith": {
       "instruct": "male, middle-aged, low pitch, american accent",
-      "speed": 1.0
+      "speed": 1.0,
     },
     "tech_priest": {
       "instruct": "male, elderly, very low pitch, british accent",
-      "speed": 0.95
+      "speed": 0.95,
     },
     "sarcastic_senior": {
       "instruct": "male, middle-aged, low pitch, american accent",
-      "speed": 1.0
+      "speed": 1.0,
     },
     "over_eager_intern": {
       "instruct": "female, young adult, high pitch, american accent",
-      "speed": 1.1
+      "speed": 1.1,
     },
     "existential_emo": {
-      "instruct": "male, teenager, low pitch, american accent, whisper",
-      "speed": 0.9
+      "instruct": "male, teenager, low pitch, american accent",
+      "speed": 0.8,
     },
     "pun_master": {
       "instruct": "male, middle-aged, moderate pitch, american accent",
-      "speed": 1.05
+      "speed": 1.05,
     },
     "poet": {
-      "instruct": "male, middle-aged, low pitch, british accent, whisper",
-      "speed": 0.95
+      "instruct": "male, middle-aged, low pitch, british accent",
+      "speed": 0.95,
     },
     "nature_narrator": {
-      "instruct": "male, elderly, warm gentle tone, refined british accent, soft whispery cadence",
-      "speed": 0.95
+      "instruct": "male, elderly, very low pitch, british accent",
+      "speed": 0.95,
     },
     "head_chef": {
-      "instruct": "male, middle-aged, assertive, sharp energetic british accent",
-      "speed": 1.1
+      "instruct": "male, middle-aged, moderate pitch, british accent",
+      "speed": 1.1,
     },
     "neutral_mainframe": {
-      "instruct": "neutral, monotone, flat affect, precise, robotic cadence, mid pitch",
-      "speed": 1.0
+      "instruct": "male, young adult, moderate pitch, russian accent",
+      "speed": 1.0,
     }
   }
 }
