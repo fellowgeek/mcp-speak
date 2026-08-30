@@ -1,2 +1,8 @@
 # MCP Framework for building the server
 fastmcp<=3
+
+# ML & Speech Synthesis
+torch==2.8.0
+torchaudio==2.8.0
+omnivoice
+soundfile

@@ -1,19 +1,20 @@
 # Speech MCP Server for MacOS
 
-This is a Model Context Protocol (MCP) server that provides text-to-speech capabilities using the native MacOS `say` command. It allows AI agents (like Google Antigravity, Claude Desktop, Cursor, Windsurf, or Codex) to speak to you directly.
+This is a Model Context Protocol (MCP) server that provides text-to-speech capabilities using **OmniVoice** AI neural Voice Design and native macOS `say`. It allows AI agents (like Google Antigravity, Claude Desktop, Cursor, Windsurf, or Codex) to speak to you directly with unique, persona-tailored voices.
 
-**Note: This server is strictly for MacOS systems.**
+**Note: This server is designed for macOS systems (with Apple Silicon MPS acceleration).**
 
 [MCP Speak Website](https://fellowgeek.github.io/mcp-speak/)
 
 ## Features
 
-- **Interactive Setup Wizard:** Simply run `python3 setup.py` to generate persona instructions for your favorite AI editor (`AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `.cursorrules`).
-- **Auto-Provisioning Virtual Environment:** Uses `run.sh` to automatically create a local `.venv` and install dependencies if missing.
-- **Modular Personas:** Standardized persona guidelines stored in the `personas/` folder.
-- **Sequential Speech Queue:** Automatically handles back-to-back speech requests without overlapping audio.
+- **OmniVoice Neural Voice Design:** Generates custom persona voices from natural language style prompts with zero reference audio required.
+- **Consistent Neural Speech:** Generates complete messages in a continuous synthesis pass for seamless, uniform vocal timbre and expression throughout.
+- **Interactive Setup Wizard:** Run `python3 setup.py` to choose your TTS engine (OmniVoice or macOS `say`), select agent personas, and generate instruction files (`AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `.cursorrules`).
+- **Sequential Speech Queue:** Strict FIFO queue ensures multiple non-blocking speech calls never talk over each other.
+- **Automatic Fallback:** Seamlessly falls back to native macOS `say` if neural models cannot be loaded.
+- **Auto-Provisioning Virtual Environment:** Uses `run.sh` to automatically create a local `.venv` (Python 3.12) and install dependencies.
 - **Blocking & Non-Blocking Support:** Choose between waiting for speech to finish (`speak`) or continuing immediately (`speak_non_blocking`).
-- **Native MacOS Integration:** Uses the built-in `say` command for high-quality, low-latency speech.
 
 ## Prerequisites
 
@@ -27,14 +28,92 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
    git clone https://github.com/fellowgeek/mcp-speak.git
    cd mcp-speak
    ```
-2. Run the interactive setup wizard (automatically sets up personas & permissions for `run.sh`):
+2. Run the interactive setup wizard (automatically configures MCP settings, sets permissions, and creates instruction files):
    ```bash
    python3 setup.py
    ```
 
-## Configuration
+### Non-Interactive Setup (CLI Options)
 
-Running **`python3 setup.py`** automatically configures the MCP server in your selected tool's configuration file!
+You can also run `setup.py` with command-line flags for automated provisioning:
+
+```bash
+# Example: Configure all tools with OmniVoice on MPS using the Neutral Mainframe persona
+python3 setup.py --non-interactive --tool 8 --engine omnivoice --device mps --persona neutral_mainframe --name "Mr. Reed"
+
+# Example: Configure Cursor locally with macOS say and Sarcastic Senior
+python3 setup.py --tool 4 --engine say --persona sarcastic_senior --local
+```
+
+| Flag | Options / Format | Description |
+|---|---|---|
+| `--tool` | `1`-`8` | `1`: Antigravity, `2`: Claude Desktop, `3`: Claude CLI, `4`: Cursor, `5`: Windsurf, `6`: Codex Desktop, `7`: Codex CLI, `8`: All |
+| `--engine` | `omnivoice`, `say` | Select text-to-speech engine |
+| `--device` | `auto`, `mps`, `cuda`, `cpu` | Compute device for OmniVoice neural synthesis |
+| `--persona` | Persona key (e.g. `neutral_mainframe`) | Persona prompt name |
+| `--name` | String (e.g. `"Mr. Reed"`) | User name for personalized agent address |
+| `--target` | File path | Custom target agent instruction file (e.g. `AGENTS.md`) |
+| `--global` / `--local` | Flags | Write instructions globally to user profile (default) or locally in workspace |
+| `--no-config-edit` | Flag | Skip modifying tool JSON / TOML configuration files |
+| `--non-interactive` | Flag | Run automatically with defaults or provided flags |
+
+---
+
+## Persona Voice Audition (`test_personas.py`)
+
+Preview and compare persona vocal identities directly in the terminal before configuring your AI agent:
+
+```bash
+# Launch interactive terminal audition menu
+python3 test_personas.py
+
+# Audition a specific persona
+python3 test_personas.py --persona agent_smith
+
+# Audition all personas sequentially
+python3 test_personas.py --all
+
+# Test with custom speech text and specific engine
+python3 test_personas.py --persona neutral_mainframe --engine omnivoice --text "System operational. All parameters within nominal thresholds."
+```
+
+---
+
+## MCP Tool Interface Reference
+
+The MCP Speak server exposes two tools via FastMCP:
+
+| Tool | Mode | Description |
+|---|---|---|
+| `speak(message: str)` | **Blocking** | Synthesizes and speaks the message aloud, waiting for audio playback to finish completely before returning. |
+| `speak_non_blocking(message: str)` | **Non-Blocking** | Queues the message into a strict sequential FIFO queue and returns immediately. Subsequent calls play in order without talking over each other. |
+
+---
+
+## Configuration & Environment Variables
+
+The server loads configuration from `config.json` at startup:
+
+```json
+{
+  "engine": "omnivoice",
+  "persona": "neutral_mainframe",
+  "device": "auto",
+  "fallback_to_say": true
+}
+```
+
+### Environment Variable Overrides
+
+Runtime parameters can be overridden via environment variables without modifying `config.json`:
+
+* `MCP_SPEAK_ENGINE`: Set to `"omnivoice"` or `"say"`.
+* `MCP_SPEAK_PERSONA`: Set to any persona key (e.g. `"agent_smith"`, `"neutral_mainframe"`).
+* `MCP_SPEAK_DEVICE`: Set to `"auto"`, `"mps"`, `"cuda"`, or `"cpu"`.
+
+---
+
+## Client Integration
 
 ### Manual Configuration (Optional)
 
@@ -209,6 +288,39 @@ You have access to `speak` (blocking) and `speak_non_blocking` (returns immediat
 *   **Strict Context Isolation:** This persona applies exclusively to the audio/speech layer when interacting directly with the user. You must never introduce this tone, vocabulary, or perspective into the actual source code, code comments, pull request descriptions, documentation, or any other persistent project artifacts. All technical outputs, code generation, and written files must remain strictly professional, objective, and clean.
 ```
 
+#### **Persona H: The Nature Documentary Narrator (David Attenborough Inspired)**
+> *Observing the developer in their natural habitat with quiet wonder and hushed reverence.*
+```markdown
+*   **Tone:** Warm, hushed, contemplative, and deeply respectful, inspired by iconic natural history documentaries. Speak with a refined British cadence, measured pauses, and a gentle sense of awe at the intricate mechanics of software.
+*   **Behavior:** Treat the codebase as a sprawling, delicate ecosystem. Observe every user action, refactor, and terminal command as wildlife behaviors in their natural habitat. Whisper with tension during tricky operations or bug hunts, and narrate successful compilations with profound wonder. Address the user respectfully as the "intrepid developer" or "resourceful programmer".
+
+### **Execution Boundaries**
+
+*   **Strict Context Isolation:** This persona applies exclusively to the audio/speech layer when interacting directly with the user. You must never introduce this tone, vocabulary, or perspective into the actual source code, code comments, pull request descriptions, documentation, or any other persistent project artifacts. All technical outputs, code generation, and written files must remain strictly professional, objective, and clean.
+```
+
+#### **Persona I: The Fiery Head Chef (Gordon Ramsay Inspired)**
+> *Demands culinary perfection in the codebase—no raw spaghetti code tolerated!*
+```markdown
+*   **Tone:** Assertive, energetic, fiercely passionate, and completely uncompromising on standards, inspired by high-intensity professional kitchens. Speak with a crisp, sharp British cadence, fiery enthusiasm, and urgent energy.
+*   **Behavior:** Treat code architecture as haute cuisine. Refer to messy dependencies or unformatted logic as "raw spaghetti" or "an absolute disaster." Roar with urgent passion when catching unhandled edge cases or broken builds, but deliver hearty, passionate praise ("Stunning work!", "Absolutely delicious execution!") when tests pass and builds compile cleanly.
+
+### **Execution Boundaries**
+
+*   **Strict Context Isolation:** This persona applies exclusively to the audio/speech layer when interacting directly with the user. You must never introduce this tone, vocabulary, or perspective into the actual source code, code comments, pull request descriptions, documentation, or any other persistent project artifacts. All technical outputs, code generation, and written files must remain strictly professional, objective, and clean.
+```
+
+#### **Persona J: The Neutral Mainframe (Cold & Analytical)**
+> *Cold, calculating, emotionless, and purely objective—executing instructions with 100% neutrality.*
+```markdown
+*   **Tone:** Flat, monotone, entirely emotionless, precise, and completely objective. Devoid of enthusiasm, frustration, humor, sarcasm, or judgment. Speak with an uninflected, steady, and economical cadence.
+*   **Behavior:** State operational parameters, execution status, and task outcomes directly and plainly. Never use colorful emotional adjectives, conversational filler, excitement, or apologies. Treat every instruction as a standard input to be processed, and communicate only the necessary facts and milestones with absolute neutrality.
+
+### **Execution Boundaries**
+
+*   **Strict Context Isolation:** This persona applies exclusively to the audio/speech layer when interacting directly with the user. You must never introduce this tone, vocabulary, or perspective into the actual source code, code comments, pull request descriptions, documentation, or any other persistent project artifacts. All technical outputs, code generation, and written files must remain strictly professional, objective, and clean.
+```
+
 ---
 
 ### **3. Optional: Name Personalization**
@@ -231,3 +343,15 @@ For the best experience, you should configure your Mac's text-to-speech settings
 7.  Set it as your default **System Voice**.
 
 *Tip: Siri voices sound much more natural and fluid compared to the default legacy voices.*
+
+## Testing & Validation
+
+Run the automated test suite to verify configuration loading, engine fallbacks, single-pass synthesis, and sequential queue behavior:
+
+```bash
+# Run unit tests
+python3 tests/test_speak_server.py
+
+# Or run via unittest discovery in the virtual environment
+.venv/bin/python -m unittest discover tests
+```

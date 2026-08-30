@@ -18,6 +18,14 @@ PERSONA_MAP = {
     "5": ("Tech Priest", "tech_priest.md"),
     "6": ("Agent Smith", "agent_smith.md"),
     "7": ("Gothic Poet (Edgar Allan Poe)", "poet.md"),
+    "8": ("Nature Documentary Narrator (David Attenborough)", "nature_narrator.md"),
+    "9": ("Fiery Head Chef (Gordon Ramsay)", "head_chef.md"),
+    "10": ("Neutral Mainframe (Cold & Analytical)", "neutral_mainframe.md"),
+}
+
+ENGINE_MAP = {
+    "1": ("OmniVoice (AI Voice Design - Custom Neural Voice per Persona)", "omnivoice"),
+    "2": ("macOS 'say' (Native, instant, lightweight)", "say"),
 }
 
 TOOL_MAP = {
@@ -59,6 +67,28 @@ def get_interactive_choice_key(options, prompt_text, default_key="1"):
     if choice not in options:
         choice = default_key
     return choice
+
+def update_project_config(engine: str, persona_key: str, device: str = None):
+    config_path = PROJECT_DIR / "config.json"
+    data = {}
+    if config_path.exists():
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+
+    data["engine"] = engine
+    data["persona"] = persona_key
+    if device:
+        data["device"] = device
+    elif "device" not in data:
+        data["device"] = "auto"
+    if "fallback_to_say" not in data:
+        data["fallback_to_say"] = True
+
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
 
 def inject_mcp_config_toml(path: Path, run_sh_path: Path):
     path = path.expanduser()
@@ -196,6 +226,8 @@ def main():
     parser = argparse.ArgumentParser(description="Interactive setup wizard for mcp-speak.")
     parser.add_argument("--tool", help="Target tool choice (1: Antigravity, 2: Claude Desktop, 3: Claude CLI, 4: Cursor, 5: Windsurf, 6: Codex Desktop, 7: Codex CLI, 8: All)")
     parser.add_argument("--target", help="Custom target agent instructions file path (e.g. AGENTS.md)")
+    parser.add_argument("--engine", choices=["omnivoice", "say"], help="TTS engine choice (omnivoice or say)")
+    parser.add_argument("--device", choices=["auto", "mps", "cuda", "cpu"], help="Hardware device for OmniVoice (auto, mps, cuda, cpu)")
     parser.add_argument("--persona", help="Persona file name (e.g. agent_smith.md or agent_smith)")
     parser.add_argument("--name", help="User's name for personalized address")
     parser.add_argument("--global", dest="is_global", action="store_true", help="Install persona globally across user profile (default)")
@@ -236,7 +268,17 @@ def main():
     else:
         target_paths.append(Path(local_prompt_file))
 
-    # 2. Determine Persona
+    # 2. Determine TTS Engine
+    selected_engine = "omnivoice"
+    if args.engine:
+        selected_engine = args.engine.lower()
+    elif not args.non_interactive:
+        _, selected_engine = get_interactive_choice(
+            ENGINE_MAP, "\nSelect Text-to-Speech Engine:", default_key="1"
+        )
+
+    # 3. Determine Persona
+    persona_key_name = "agent_smith"
     if args.persona:
         p_name = args.persona if args.persona.endswith(".md") else f"{args.persona}.md"
         persona_file = PERSONAS_DIR / p_name
@@ -244,15 +286,21 @@ def main():
             print(f"Error: Persona file '{persona_file}' not found.", file=sys.stderr)
             sys.exit(1)
         persona_label = p_name
+        persona_key_name = persona_file.stem
     elif args.non_interactive:
         persona_file = PERSONAS_DIR / "agent_smith.md"
         persona_label = "Agent Smith"
+        persona_key_name = "agent_smith"
     else:
         label, filename = get_interactive_choice(PERSONA_MAP, "\nSelect agent persona:", default_key="1")
         persona_file = PERSONAS_DIR / filename
         persona_label = label
+        persona_key_name = persona_file.stem
 
-    # 3. Determine User Name
+    # Update project configuration
+    update_project_config(selected_engine, persona_key_name, args.device)
+
+    # 4. Determine User Name
     user_name = args.name
     if not user_name and not args.non_interactive and not (args.target and args.persona):
         user_name = input("\nEnter your name for agent personalization (optional, press Enter to skip): ").strip()
@@ -289,8 +337,9 @@ def main():
     print(f"✅ Successfully wrote persona '{persona_label}' globally to:")
     for wp in written_prompt_paths:
         print(f"   • {wp}")
+    print(f"✅ Configured TTS Engine: {selected_engine.upper()} (Saved to config.json)")
 
-    # 4. Automatically inject MCP Server Config into tool configuration files / CLI
+    # 5. Automatically inject MCP Server Config into tool configuration files / CLI
     updated_configs = []
     cli_cmd_results = []
     if not args.no_config_edit:

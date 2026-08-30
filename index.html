@@ -1,550 +1,1060 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speak MCP | Voice Interface for Agents</title>
+    <title>MCP // SPEAK — Neural Audio Synthesizer Interface for AI Agents</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,500;0,600;0,700;1,700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
-
         :root {
-            --bg-base: #050507;
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --card-surface: rgba(15, 15, 20, 0.4);
-            --card-hover: rgba(20, 20, 25, 0.6);
-            --border-soft: rgba(255, 255, 255, 0.05);
-            --nav-bg: rgba(5, 5, 7, 0.8);
-            --terminal-bg: #000000;
-            --brand-primary: #818cf8;
-            --brand-secondary: #c084fc;
+            --bg-void: #090a0f;
+            --bg-chassis: #10121a;
+            --bg-panel: #161924;
+            --bg-bezel: #1c2030;
+            --border-chassis: #252b3d;
+            --border-highlight: rgba(255, 176, 0, 0.35);
+            --amber-primary: #ffb000;
+            --amber-dim: #996a00;
+            --cyan-accent: #00e5ff;
+            --green-phosphor: #00ff66;
+            --text-main: #f3f4f6;
+            --text-dim: #94a3b8;
+            --text-sub: #64748b;
         }
 
+        /* Complete Laboratory Light Mode System */
         body.light-mode {
-            --bg-base: #fafafa;
-            --text-main: #18181b;
-            --text-muted: #71717a;
-            --card-surface: rgba(255, 255, 255, 0.5);
-            --card-hover: rgba(255, 255, 255, 0.8);
-            --border-soft: rgba(0, 0, 0, 0.05);
-            --nav-bg: rgba(250, 250, 250, 0.8);
-            --terminal-bg: #f4f4f5;
-            --brand-primary: #6366f1;
-            --brand-secondary: #a855f7;
+            --bg-void: #f8fafc;
+            --bg-chassis: #f1f5f9;
+            --bg-panel: #ffffff;
+            --bg-bezel: #e2e8f0;
+            --border-chassis: #cbd5e1;
+            --border-highlight: rgba(245, 158, 11, 0.4);
+            --amber-primary: #f59e0b;
+            --amber-dim: #d97706;
+            --cyan-accent: #0284c7;
+            --green-phosphor: #059669;
+            --text-main: #0f172a;
+            --text-dim: #475569;
+            --text-sub: #64748b;
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-base);
-            background-image:
-                radial-gradient(at 0% 0%, rgba(129, 140, 248, 0.12) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(192, 132, 252, 0.08) 0px, transparent 50%);
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-void);
             color: var(--text-main);
+            background-image: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 176, 0, 0.06), transparent 70%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.03), transparent 50%);
             scroll-behavior: smooth;
-            min-height: 100vh;
-            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.light-mode {
-            background-image:
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.06) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.04) 0px, transparent 50%);
+            background-color: #f8fafc;
+            color: #0f172a;
+            background-image: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245, 158, 11, 0.08), transparent 70%),
+                radial-gradient(circle at 100% 100%, rgba(2, 132, 199, 0.04), transparent 50%);
         }
 
-        h1.web-header {
-            line-height: 1.3em;
+        .font-display { font-family: 'Chakra Petch', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* CRT Screen Simulation Overlay */
+        .crt-screen {
+            position: relative;
+            background: #08090d;
+            border: 1px solid var(--border-chassis);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0,0,0,0.5);
+            overflow: hidden;
         }
-
-        .mono { font-family: 'JetBrains Mono', monospace; }
-
-        .glass-card {
-            background: var(--card-surface);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-soft);
-            border-radius: 1.5rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .glass-card:hover {
-            border-color: rgba(129, 140, 248, 0.25);
-            background: var(--card-hover);
-            transform: translateY(-4px) scale(1.01);
-            box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
-        }
-
-        body.light-mode .glass-card:hover {
-            box-shadow: 0 20px 40px -20px rgba(99, 102, 241, 0.15);
-        }
-
-        .dark-terminal {
-            background: var(--terminal-bg);
-            border: 1px solid var(--border-soft);
-            border-radius: 1rem;
-        }
-
-        body.light-mode .dark-terminal code { color: var(--brand-primary); }
-        body.light-mode .dark-terminal pre { color: var(--brand-primary); }
-        body.light-mode .text-slate-400 { color: var(--text-muted); }
-        body.light-mode .text-slate-500 { color: #52525b; }
-        body.light-mode .bg-slate-950\/50 { background-color: var(--nav-bg); }
-        body.light-mode .bg-slate-900\/40 { background-color: rgba(0, 0, 0, 0.02); }
-        body.light-mode #user-name,
-        body.light-mode #target-tool {
-            background-color: var(--terminal-bg);
-            color: var(--text-main);
-            border-color: var(--border-soft);
-        }
-
-        .text-gradient {
-            background: linear-gradient(135deg, #fff 0%, var(--text-muted) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        body.light-mode .text-gradient {
-            background: linear-gradient(135deg, var(--text-main) 0%, var(--text-muted) 100%);
-            -webkit-background-clip: text;
-        }
-
-        .persona-active {
-            background: rgba(129, 140, 248, 0.08);
-            border-color: var(--brand-primary) !important;
-            box-shadow: 0 0 30px rgba(129, 140, 248, 0.1);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-            box-shadow: 0 8px 20px -6px rgba(129, 140, 248, 0.4);
-        }
-
-        input::placeholder {
-            color: var(--text-muted);
+        .crt-screen::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            z-index: 10;
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
             opacity: 0.5;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 10px;
-            border: 2px solid var(--bg-base);
+        /* Industrial Chassis & Rack Panels */
+        .rack-panel {
+            background: var(--bg-chassis);
+            border: 1px solid var(--border-chassis);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.8);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            position: relative;
         }
-        body.light-mode ::-webkit-scrollbar-thumb {
-            background: #e4e4e7;
+        .rack-panel::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--amber-primary), transparent);
+            opacity: 0.3;
+        }
+
+        body.light-mode header {
+            background-color: rgba(248, 250, 252, 0.94);
+            border-bottom-color: #cbd5e1;
+        }
+
+        body.light-mode .rack-panel {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            border-top: 1px solid #ffffff;
+            border-bottom: 2px solid #94a3b8;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        }
+
+        /* Chassis Screws */
+        .screw-corner {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #202430;
+            border: 1px solid #363d50;
+            border-radius: 50%;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.8);
+        }
+        .screw-corner::after {
+            content: "";
+            position: absolute;
+            top: 3px; left: 1px; right: 1px; height: 1px;
+            background: #475169;
+            transform: rotate(45deg);
+        }
+
+        body.light-mode .screw-corner {
+            background: #cbd5e1;
+            border-color: #94a3b8;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
+        }
+        body.light-mode .screw-corner::after {
+            background: #64748b;
+        }
+
+        /* Mechanical Button */
+        .btn-mechanical {
+            background: linear-gradient(180deg, #242938 0%, #151822 100%);
+            border: 1px solid #3d465f;
+            border-bottom: 3px solid #0d0f15;
+            color: #f3f4f6;
+            font-family: 'Chakra Petch', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            transition: transform 0.1s ease, border-color 0.15s ease, color 0.15s ease;
+            position: relative;
+        }
+        .btn-mechanical:hover {
+            border-color: var(--amber-primary);
+            color: var(--amber-primary);
+            transform: translateY(-1px);
+        }
+        .btn-mechanical:active {
+            transform: translateY(2px);
+            border-bottom-width: 1px;
+        }
+
+        body.light-mode .btn-mechanical {
+            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+            border-color: #cbd5e1;
+            border-bottom: 3px solid #94a3b8;
+            color: #0f172a;
+        }
+        body.light-mode .btn-mechanical:hover {
+            border-color: #f59e0b;
+            color: #d97706;
+        }
+
+        .btn-amber-glow {
+            background: linear-gradient(180deg, #ffb000 0%, #cc8800 100%);
+            border: 1px solid #ffd000;
+            border-bottom: 3px solid #664400;
+            color: #0c0d12;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+            transition: transform 0.1s ease, background 0.15s ease;
+        }
+        .btn-amber-glow:hover {
+            background: linear-gradient(180deg, #ffd000 0%, #ffb000 100%);
+            transform: translateY(-1px);
+        }
+        .btn-amber-glow:active {
+            transform: translateY(2px);
+            border-bottom-width: 1px;
+        }
+
+        body.light-mode .btn-amber-glow {
+            background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+            border-color: #fcd34d;
+            border-bottom: 3px solid #d97706;
+            color: #0f172a;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        body.light-mode .btn-amber-glow:hover {
+            background: linear-gradient(180deg, #fde68a 0%, #fbbf24 100%);
+        }
+
+        /* Persona Rack Cartridge */
+        .cartridge {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-chassis);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+            position: relative;
+        }
+        .cartridge:hover {
+            border-color: rgba(255, 176, 0, 0.6);
+            transform: translateY(-2px);
+        }
+        .cartridge.cartridge-active {
+            border-color: var(--amber-primary);
+            background: linear-gradient(180deg, var(--bg-bezel) 0%, var(--bg-panel) 100%);
+        }
+        .cartridge.cartridge-active .cartridge-led {
+            background-color: var(--amber-primary);
+        }
+
+        body.light-mode .cartridge {
+            background: #ffffff;
+            border-color: #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        body.light-mode .cartridge:hover {
+            border-color: #f59e0b;
+        }
+        body.light-mode .cartridge.cartridge-active {
+            border-color: #f59e0b;
+            background: linear-gradient(180deg, #ffffff 0%, #fffbeb 100%);
+        }
+        body.light-mode .cartridge.cartridge-active .cartridge-led {
+            background-color: #f59e0b;
+        }
+
+        /* Persona Avatar Bezels in Light Mode */
+        body.light-mode .cartridge .rounded-full {
+            background-color: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-mode .cartridge:hover .rounded-full {
+            border-color: #f59e0b !important;
+        }
+
+        /* Terminal & CRT Screens in Light Mode */
+        body.light-mode .crt-screen {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+        }
+        body.light-mode .crt-screen::before {
+            opacity: 0.03 !important;
+        }
+        body.light-mode .crt-screen .text-white {
+            color: #0f172a !important;
+        }
+        body.light-mode .crt-screen code,
+        body.light-mode .crt-screen pre {
+            color: #0f172a !important;
+        }
+        body.light-mode #config-code-block {
+            color: #0f172a !important;
+        }
+        body.light-mode #generated-output {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Text Contrast Overrides in Light Mode */
+        body.light-mode .text-white {
+            color: #0f172a !important;
+        }
+        body.light-mode .text-\[\#94a3b8\] {
+            color: #475569 !important;
+        }
+        body.light-mode .text-\[\#64748b\] {
+            color: #64748b !important;
+        }
+        body.light-mode .text-\[\#ffb000\] {
+            color: #d97706 !important;
+        }
+        body.light-mode .text-\[\#ffb000\]\/50 {
+            color: rgba(217, 119, 6, 0.6) !important;
+        }
+        body.light-mode .text-\[\#00e5ff\] {
+            color: #0284c7 !important;
+        }
+        body.light-mode .text-\[\#00ff66\] {
+            color: #059669 !important;
+        }
+        body.light-mode .text-amber-200 {
+            color: #92400e !important;
+        }
+
+        /* Background & Surface Overrides in Light Mode */
+        body.light-mode .bg-\[\#161924\] {
+            background-color: #ffffff !important;
+        }
+        body.light-mode .bg-\[\#0d0f15\] {
+            background-color: #f8fafc !important;
+        }
+        body.light-mode .bg-\[\#10121a\] {
+            background-color: #ffffff !important;
+        }
+        body.light-mode .bg-\[\#1a1e2b\] {
+            background-color: #e2e8f0 !important;
+        }
+        body.light-mode .bg-\[\#090a0f\] {
+            background-color: #f1f5f9 !important;
+        }
+        body.light-mode .bg-\[\#ffb000\]\/10 {
+            background-color: rgba(245, 158, 11, 0.12) !important;
+        }
+        body.light-mode .bg-\[\#ffb000\]\/20 {
+            background-color: rgba(245, 158, 11, 0.2) !important;
+        }
+        body.light-mode .border-\[\#252b3d\] {
+            border-color: #cbd5e1 !important;
+        }
+        body.light-mode .border-\[\#ffb000\]\/30,
+        body.light-mode .border-\[\#ffb000\]\/40 {
+            border-color: rgba(245, 158, 11, 0.4) !important;
+        }
+
+        /* Inputs & Select Elements in Light Mode */
+        body.light-mode input,
+        body.light-mode select {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        }
+        body.light-mode select option {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+        }
+        body.light-mode input:focus,
+        body.light-mode select:focus {
+            border-color: #f59e0b !important;
+        }
+
+        /* Config Tabs in Light Mode */
+        body.light-mode .config-tab-btn {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #475569 !important;
+        }
+        body.light-mode .config-tab-btn:hover {
+            border-color: #f59e0b !important;
+            color: #d97706 !important;
+        }
+        body.light-mode .config-tab-btn.active {
+            background: #fef3c7 !important;
+            border-color: #f59e0b !important;
+            color: #b45309 !important;
+        }
+
+        /* Toast HUD in Light Mode */
+        body.light-mode #toast {
+            background: #ffffff !important;
+            border-color: #f59e0b !important;
+            color: #0f172a !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        }
+        body.light-mode #toast #toast-message {
+            color: #0f172a !important;
+        }
+
+        /* Footer in Light Mode */
+        body.light-mode footer {
+            background-color: #e2e7ef !important;
+            border-top-color: #cbd5e1 !important;
+        }
+
+        /* LED Segment & VU Meters */
+        .vu-meter-bar {
+            background: #1a1e2b;
+            position: relative;
+            overflow: hidden;
+        }
+        .vu-meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff66 0%, #ffb000 70%, #ef4444 100%);
+            width: 100%;
+            transform-origin: left center;
+            transform: scaleX(0);
+            transition: transform 0.08s ease-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-void); }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-chassis);
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--amber-dim); }
+
+        /* Audio Waveform Canvas Box */
+        #oscilloscope-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        .status-dot-pulse {
+            animation: statusPulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+        }
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
         }
     </style>
 </head>
-<body class="selection:bg-indigo-500/30">
+<body class="selection:bg-amber-500 selection:text-black text-lg">
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-8 right-8 bg-zinc-900 text-white px-6 py-3 rounded-2xl shadow-2xl border border-white/10 transform translate-y-24 transition-transform duration-300 z-50 flex items-center gap-3">
-        <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
-        <span id="toast-message" class="text-sm font-semibold">Config copied to clipboard</span>
+<!--
+THESIS: MCP Speak is not another SaaS audio player; it is an industrial neural synthesizer rack that gives cold, intelligent command voices to AI agents on macOS.
+OWN-WORLD: Dark matte chassis (#10121a), amber phosphor CRT glow (#ffb000), tactile hardware switches, real-time oscilloscope canvas, and modular cartridge racks.
+STORY: Developers discover real-time voice design for agents, test responsive neural personas via live synthesis, and generate tailored IDE instruction files in seconds.
+FIRST VIEWPORT: High-contrast telemetry header, dual-mode mechanical command console, live interactive phosphor oscilloscope visualizer, and instant installation triggers.
+FORM: Cassette-futurism synthesizer mainframe (candidate 4, signals-instruments-phosphor-terminal-midnight, seed e77e4718).
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+
+    <!-- Telemetry Notification HUD -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-[#161924] text-white px-5 py-3 border border-[#ffb000]/40 shadow-2xl transform translate-y-24 transition-transform duration-300 z-50 flex items-center gap-3 font-mono text-xs">
+        <div class="w-2 h-2 rounded-full bg-[#ffb000] status-dot-pulse"></div>
+        <span id="toast-message" class="text-amber-200">SIGNAL ACQUIRED // BUFFER COPIED</span>
     </div>
 
-    <!-- Navigation -->
-    <nav class="sticky top-0 z-40 bg-slate-950/50 backdrop-blur-md border-b border-white/5 py-4 transition-colors duration-300" id="main-nav">
-        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-600/20">
-                    <i class="fas fa-volume-up text-white text-xs"></i>
-                </div>
-                <span class="text-lg font-bold tracking-tight"><span class="text-indigo-400">MCP</span> Speak</span>
-            </div>
-            <div class="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest text-slate-400">
-                <a href="#install" class="hover:text-indigo-400 transition-colors">Installation</a>
-                <a href="#config" class="hover:text-indigo-400 transition-colors">Config</a>
-                <a href="#personas" class="hover:text-indigo-400 transition-colors">Personas</a>
-            </div>
+    <!-- Telemetry Navigation Header -->
+    <header class="sticky top-0 z-40 bg-[#0d0f15]/90 backdrop-blur-md border-b border-[#252b3d]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center">
+            
+            <!-- Brand & Model Readout -->
             <div class="flex items-center gap-4">
-                <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-indigo-400 transition-all" id="theme-toggle">
-                    <i class="fas fa-sun text-lg hidden" id="sun-icon"></i>
-                    <i class="fas fa-moon text-lg" id="moon-icon"></i>
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-9 h-9 bg-[#1a1e2b] border border-[#ffb000]/40 flex items-center justify-center relative overflow-hidden">
+                        <i class="fas fa-wave-square text-[#ffb000] text-sm"></i>
+                        <span class="absolute -bottom-1 -right-1 w-2 h-2 bg-[#00ff66] rounded-full"></span>
+                    </div>
+                    <div>
+                        <div class="font-display font-bold text-sm tracking-wider text-white flex items-center gap-2">
+                            <span>MCP // SPEAK</span>
+                        </div>
+                        <div class="font-mono text-[10px] text-[#64748b] tracking-tight">MACOS MPS NEURAL ENGINE</div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Central Telemetry Navigation Links -->
+            <nav class="hidden md:flex items-center gap-8 font-display text-xs font-semibold uppercase tracking-widest text-[#94a3b8]">
+                <a href="#console" class="hover:text-[#ffb000] transition-colors flex items-center gap-1.5">
+                    <span class="text-[#ffb000]/50 font-mono text-[10px]">01</span> CONSOLE
+                </a>
+                <a href="#install" class="hover:text-[#ffb000] transition-colors flex items-center gap-1.5">
+                    <span class="text-[#ffb000]/50 font-mono text-[10px]">02</span> SETUP
+                </a>
+                <a href="#config" class="hover:text-[#ffb000] transition-colors flex items-center gap-1.5">
+                    <span class="text-[#ffb000]/50 font-mono text-[10px]">03</span> INTEGRATIONS
+                </a>
+                <a href="#matrix" class="hover:text-[#ffb000] transition-colors flex items-center gap-1.5">
+                    <span class="text-[#ffb000]/50 font-mono text-[10px]">04</span> VOICE MATRIX
+                </a>
+                <a href="#generator" class="hover:text-[#ffb000] transition-colors flex items-center gap-1.5">
+                    <span class="text-[#ffb000]/50 font-mono text-[10px]">05</span> PROMPT DECK
+                </a>
+            </nav>
+
+            <!-- Mode Selector (Sun/Moon Toggle) & Repository Link -->
+            <div class="flex items-center gap-3">
+                <button onclick="toggleTheme()" class="btn-mechanical w-9 h-9 flex items-center justify-center text-sm" id="theme-toggle" title="Toggle Light / Dark Mode">
+                    <i class="fas fa-sun text-[#ffb000] hidden" id="sun-icon"></i>
+                    <i class="fas fa-moon text-[#ffb000]" id="moon-icon"></i>
                 </button>
-                <a href="https://github.com/fellowgeek/mcp-speak" target="_blank" class="text-slate-400 hover:text-indigo-400 transition-colors">
-                    <i class="fab fa-github text-xl"></i>
+
+                <a href="https://github.com/fellowgeek/mcp-speak" target="_blank" rel="noopener noreferrer" class="btn-mechanical px-3.5 py-1.5 text-xs flex items-center gap-2">
+                    <i class="fab fa-github text-sm"></i>
+                    <span class="hidden sm:inline font-mono text-[11px]">GITHUB</span>
                 </a>
             </div>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold mb-8 uppercase tracking-widest">
-            <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-            </span>
-            MacOS Native
-        </div>
-        <h1 class="text-5xl md:text-7xl font-extrabold mb-8 tracking-tight text-gradient leading-tight web-header">
-            We gave the agents a voice.<br/>
-            <span class="text-indigo-500">Sorry in advance.</span>
-        </h1>
-        <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-            A specialized Model Context Protocol server for MacOS. Give your agents (like Google Antigravity, Claude Desktop, Cursor, Windsurf, or Codex) direct access to the system voice engine for real-time interaction.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#install" class="btn-primary text-white px-8 py-4 rounded-xl font-bold transition shadow-xl hover:opacity-90">
-                Get Started
-            </a>
-            <a href="#personas" class="bg-slate-800/50 text-white border border-white/5 px-8 py-4 rounded-xl font-bold transition hover:bg-slate-800">
-                Explore Personas
-            </a>
-        </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-6 space-y-32 pb-32">
+    <!-- Main Content Stream -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-16">
 
-        <!-- Installation -->
-        <section id="install" class="scroll-mt-32">
-            <div class="mb-12">
-                <h2 class="text-3xl font-bold tracking-tight mb-2">Setup Guide</h2>
-                <p class="text-slate-500 font-medium">Follow these steps to initialize your voice server.</p>
+        <!-- HERO SECTION: The Master Audio Telemetry Console -->
+        <section id="console" class="rack-panel p-6 sm:p-8 rounded-lg relative">
+            <div class="screw-corner top-3 left-3"></div>
+            <div class="screw-corner top-3 right-3"></div>
+            <div class="screw-corner bottom-3 left-3"></div>
+            <div class="screw-corner bottom-3 right-3"></div>
+
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- Left Column: Mission Directives & Hook -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-3 px-3 py-1 bg-[#161924] border border-[#ffb000]/30 text-[#ffb000] font-mono text-xs">
+                        <span class="w-2 h-2 rounded-full bg-[#00ff66] status-dot-pulse"></span>
+                        <span class="text-white">SYSTEM: ONLINE</span>
+                        <span class="text-[#475169]">|</span>
+                        <span class="text-[#94a3b8]">APPLE SILICON MPS LOADED</span>
+                    </div>
+
+                    <h1 class="font-display text-4xl sm:text-6xl font-bold tracking-tight text-white leading-tight uppercase">
+                        We gave the agents a voice. <br/>
+                        <span class="text-[#ffb000]">Sorry in advance.</span>
+                    </h1>
+
+                    <p class="text-[#94a3b8] text-lg sm:text-xl max-w-xl font-medium leading-relaxed">
+                        A specialized Model Context Protocol server for macOS that synthesizes real-time speech via OmniVoice and native macOS say. AI agents proactively announce status updates, ask clarifying questions, and deliver vocal feedback during pairing sessions.
+                    </p>
+
+                    <div class="flex flex-wrap items-center gap-4 pt-2">
+                        <a href="#install" class="btn-amber-glow px-6 py-3.5 text-sm flex items-center gap-3">
+                            <i class="fas fa-bolt text-xs"></i>
+                            <span>INITIALIZE SERVER</span>
+                        </a>
+                        <a href="#matrix" class="btn-mechanical px-6 py-3.5 text-sm flex items-center gap-3">
+                            <i class="fas fa-sliders text-xs text-[#ffb000]"></i>
+                            <span>AUDITION PERSONAS</span>
+                        </a>
+                    </div>
+
+                    <!-- Hardware Spec Strip -->
+                    <div class="grid grid-cols-3 gap-3 pt-4 border-t border-[#252b3d] font-mono text-xs">
+                        <div>
+                            <div class="text-[#64748b] text-[10px] uppercase">Synthesis Engine</div>
+                            <div class="text-white font-semibold flex items-center gap-1.5 mt-0.5">
+                                <span class="w-1.5 h-1.5 bg-[#ffb000] rounded-full"></span>
+                                OmniVoice + Say
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[#64748b] text-[10px] uppercase">Audio Queue</div>
+                            <div class="text-white font-semibold flex items-center gap-1.5 mt-0.5">
+                                <span class="w-1.5 h-1.5 bg-[#00ff66] rounded-full"></span>
+                                Non-Overlapping FIFO
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[#64748b] text-[10px] uppercase">Latency Profile</div>
+                            <div class="text-white font-semibold flex items-center gap-1.5 mt-0.5">
+                                <span class="w-1.5 h-1.5 bg-[#00e5ff] rounded-full"></span>
+                                Sub-Second MPS
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Interactive Oscilloscope CRT Monitor -->
+                <div class="lg:col-span-5">
+                    <div class="crt-screen rounded-lg p-5 flex flex-col justify-between border-2 border-[#252b3d] min-h-[360px]">
+                        
+                        <!-- CRT Header Bar -->
+                        <div class="flex justify-between items-center border-b border-[#252b3d] pb-3 mb-3 font-mono text-[11px] text-[#ffb000]">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-wave-square"></i>
+                                <span>OSCILLOSCOPE // TRACE CH-1</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="sample-rate-readout" class="text-[#64748b]">48.0 kHz</span>
+                                <span class="w-2 h-2 rounded-full bg-[#ffb000] animate-ping"></span>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Waveform Area -->
+                        <div class="relative h-44 w-full flex items-center justify-center my-auto">
+                            <canvas id="oscilloscope-canvas" width="400" height="176" class="relative z-0"></canvas>
+                        </div>
+
+                        <!-- VU Meter & Synthesis Controls -->
+                        <div class="pt-3 border-t border-[#252b3d] space-y-3 font-mono text-xs">
+                            <div class="flex items-center justify-between text-[11px] text-[#94a3b8]">
+                                <span>SIGNAL LEVEL (L/R)</span>
+                                <span id="decibel-readout" class="text-[#ffb000]">-12.4 dB</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="vu-meter-bar h-2.5 rounded-sm border border-[#252b3d]">
+                                    <div id="vu-left" class="vu-meter-fill"></div>
+                                </div>
+                                <div class="vu-meter-bar h-2.5 rounded-sm border border-[#252b3d]">
+                                    <div id="vu-right" class="vu-meter-fill"></div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-1">
+                                <button onclick="triggerVoicePulse()" class="btn-mechanical px-3 py-1 text-[11px] text-[#ffb000] flex items-center gap-2">
+                                    <i class="fas fa-play text-[8px]"></i>
+                                    <span>TEST SIGNAL PULSE</span>
+                                </button>
+                                <div class="text-[10px] text-[#64748b] uppercase">MODE: CONTINUOUS SYNTHESIS</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 02: Modular Installation Bay -->
+        <section id="install" class="scroll-mt-24">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-[#252b3d]">
+                <div>
+                    <div class="font-mono text-xs text-[#ffb000] uppercase tracking-widest mb-1 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-[#ffb000] rounded-full"></span>
+                        BAY 01 // DEPLOYMENT PROTOCOL
+                    </div>
+                    <h2 class="font-display text-3xl font-bold uppercase tracking-tight text-white">System Installation</h2>
+                </div>
+                <div class="font-mono text-xs text-[#64748b] mt-2 sm:mt-0">AUTOMATED LOCAL PROVISIONING</div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
-                <!-- Step 1 -->
-                <div class="glass-card p-6 flex flex-col">
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">1</div>
-                        <button onclick="copyToClipboard('git clone https://github.com/fellowgeek/mcp-speak.git && cd mcp-speak', this)" class="text-slate-500 hover:text-indigo-400 transition">
-                            <i class="far fa-copy"></i>
-                        </button>
-                    </div>
-                    <h3 class="font-bold mb-2">Clone Repository</h3>
-                    <p class="text-slate-400 text-sm mb-6">Fetch the code and navigate into the project directory.</p>
-                    <div class="dark-terminal p-3 mt-auto">
-                        <code class="mono text-[11px] text-indigo-300">git clone https://github.com/fellowgeek/mcp-speak.git && cd mcp-speak</code>
-                    </div>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="glass-card p-6 flex flex-col">
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">2</div>
-                        <button onclick="copyToClipboard('python3 setup.py', this)" class="text-slate-500 hover:text-indigo-400 transition">
-                            <i class="far fa-copy"></i>
-                        </button>
-                    </div>
-                    <h3 class="font-bold mb-2">Run Setup Wizard</h3>
-                    <p class="text-slate-400 text-sm mb-6">Configures your persona, permissions, and virtual environment automatically.</p>
-                    <div class="dark-terminal p-3 mt-auto">
-                        <code class="mono text-[11px] text-indigo-300">python3 setup.py</code>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Configuration -->
-        <section id="config" class="scroll-mt-32">
-            <div class="mb-12">
-                <h2 class="text-3xl font-bold tracking-tight mb-2">Manual Integration (Optional)</h2>
-                <p class="text-slate-500 font-medium">Running <code>python3 setup.py</code> configures your client automatically. Below are manual configuration reference snippets.</p>
-            </div>
-
-            <div class="space-y-6">
-                <!-- Google Antigravity -->
-                <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-star text-slate-400"></i>
-                            <span class="text-sm font-bold">Google Antigravity Config (~/.gemini/antigravity/mcp_config.json)</span>
-                        </div>
-                        <button onclick="copyConfig('antigravity-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
-                            <i class="far fa-copy"></i>
-                        </button>
-                    </div>
-                    <div class="dark-terminal p-4 mx-6 mb-6">
-                        <pre id="antigravity-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
-{
-  "mcpServers": {
-    "voice": {
-      "command": "/ABSOLUTE/PATH/TO/run.sh"
-    }
-  }
-}</pre>
-                    </div>
-                </div>
-
-                <!-- Claude CLI -->
-                <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-terminal text-slate-400"></i>
-                            <span class="text-sm font-bold">Claude CLI Config</span>
-                        </div>
-                        <button onclick="copyConfig('claude-cli-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
-                            <i class="far fa-copy"></i>
-                        </button>
-                    </div>
-                    <div class="dark-terminal p-4 mx-6 mb-6">
-                        <pre id="claude-cli-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
-claude mcp add --scope user voice -- /ABSOLUTE/PATH/TO/run.sh</pre>
-                    </div>
-                </div>
-
-                <!-- Claude Desktop -->
-                <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-desktop text-slate-400"></i>
-                            <span class="text-sm font-bold">Claude Desktop Config (~/Library/Application Support/Claude/claude_desktop_config.json)</span>
-                        </div>
-                        <button onclick="copyConfig('claude-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
-                            <i class="far fa-copy"></i>
-                        </button>
-                    </div>
-                    <div class="dark-terminal p-4 mx-6 mb-6">
-                        <pre id="claude-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
-{
-  "mcpServers": {
-    "voice": {
-      "command": "/ABSOLUTE/PATH/TO/run.sh"
-    }
-  }
-}</pre>
-                    </div>
-                </div>
-
-                <!-- Cursor IDE -->
-                <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-code text-slate-400"></i>
-                            <span class="text-sm font-bold">Cursor IDE Config (~/.cursor/mcp.json)</span>
-                        </div>
-                        <button onclick="copyConfig('cursor-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
-                            <i class="far fa-copy"></i>
-                        </button>
-                    </div>
-                    <div class="dark-terminal p-4 mx-6 mb-6">
-                        <pre id="cursor-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
-{
-  "mcpServers": {
-    "voice": {
-      "command": "/ABSOLUTE/PATH/TO/run.sh"
-    }
-  }
-}</pre>
-                    </div>
-                </div>
-
-                <!-- Windsurf -->
-                <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-wind text-slate-400"></i>
-                            <span class="text-sm font-bold">Windsurf Editor Config (~/.codeium/windsurf/mcp_config.json)</span>
-                        </div>
-                        <button onclick="copyConfig('windsurf-json', this)" class="text-slate-500 hover:text-indigo-400 transition">
-                            <i class="far fa-copy"></i>
-                        </button>
-                    </div>
-                    <div class="dark-terminal p-4 mx-6 mb-6">
-                        <pre id="windsurf-json" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
-{
-  "mcpServers": {
-    "voice": {
-      "command": "/ABSOLUTE/PATH/TO/run.sh"
-    }
-  }
-}</pre>
-                    </div>
-                </div>
-
-                <!-- Codex Desktop -->
-                <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-cubes text-slate-400"></i>
-                            <span class="text-sm font-bold">Codex Desktop Config (~/.codex/config.toml)</span>
-                        </div>
-                        <button onclick="copyConfig('codex-toml', this)" class="text-slate-500 hover:text-indigo-400 transition">
-                            <i class="far fa-copy"></i>
-                        </button>
-                    </div>
-                    <div class="dark-terminal p-4 mx-6 mb-6">
-                        <pre id="codex-toml" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
-[mcp_servers.voice]
-command = "/ABSOLUTE/PATH/TO/run.sh"</pre>
-                    </div>
-                </div>
-
-                <!-- Codex CLI -->
-                <div class="glass-card overflow-hidden">
-                    <div class="px-6 py-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-terminal text-slate-400"></i>
-                            <span class="text-sm font-bold">Codex CLI Config</span>
-                        </div>
-                        <button onclick="copyConfig('codex-cli-cmd', this)" class="text-slate-500 hover:text-indigo-400 transition">
-                            <i class="far fa-copy"></i>
-                        </button>
-                    </div>
-                    <div class="dark-terminal p-4 mx-6 mb-6">
-                        <pre id="codex-cli-cmd" class="mono text-[11px] text-indigo-300 overflow-x-auto leading-relaxed">
-codex mcp add voice -- /ABSOLUTE/PATH/TO/run.sh</pre>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Personas -->
-        <section id="personas" class="scroll-mt-32">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold tracking-tight mb-4">Personality Profiles</h2>
-                <p class="text-slate-400 max-w-xl mx-auto">Standard agents are boring. Select a persona to see how it modifies your agent's spoken behavior.</p>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-12">
-                <!-- Sarcastic Senior -->
-                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between persona-active" id="p-senior" onclick="selectPersona('senior', this)">
-                    <button onclick="previewVoice('senior', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[9px]"></i>
-                    </button>
-                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
-                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/sarcastic_senior.webp" alt="Sarcastic Senior" />
-                    </div>
-                    <h3 class="font-bold text-xs">Sarcastic Senior</h3>
-                </div>
-
-                <!-- Eager Intern -->
-                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-intern" onclick="selectPersona('intern', this)">
-                    <button onclick="previewVoice('intern', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[9px]"></i>
-                    </button>
-                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
-                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/over_eager_intern.webp" alt="Eager Intern" />
-                    </div>
-                    <h3 class="font-bold text-xs">Eager Intern</h3>
-                </div>
-
-                <!-- Existential Emo -->
-                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-emo" onclick="selectPersona('emo', this)">
-                    <button onclick="previewVoice('emo', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[9px]"></i>
-                    </button>
-                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
-                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/existential_emo.webp" alt="Existential Emo" />
-                    </div>
-                    <h3 class="font-bold text-xs">Existential Emo</h3>
-                </div>
-
-                <!-- Pun Master -->
-                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-pun" onclick="selectPersona('pun', this)">
-                    <button onclick="previewVoice('pun', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[9px]"></i>
-                    </button>
-                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
-                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/pun_master.webp" alt="Pun Master" />
-                    </div>
-                    <h3 class="font-bold text-xs">Pun Master</h3>
-                </div>
-
-                <!-- Tech Priest -->
-                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-priest" onclick="selectPersona('priest', this)">
-                    <button onclick="previewVoice('priest', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[9px]"></i>
-                    </button>
-                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
-                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/tech_priest.webp" alt="Tech Priest" />
-                    </div>
-                    <h3 class="font-bold text-xs">Tech Priest</h3>
-                </div>
-
-                <!-- Agent Smith -->
-                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-smith" onclick="selectPersona('smith', this)">
-                    <button onclick="previewVoice('smith', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[9px]"></i>
-                    </button>
-                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
-                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/agent_smith.webp" alt="Agent Smith" />
-                    </div>
-                    <h3 class="font-bold text-xs">Agent Smith</h3>
-                </div>
-
-                <!-- Gothic Poet -->
-                <div class="persona-card glass-card p-5 cursor-pointer relative group text-center flex flex-col items-center justify-between" id="p-poet" onclick="selectPersona('poet', this)">
-                    <button onclick="previewVoice('poet', event)" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center hover:bg-indigo-600 transition text-indigo-400 hover:text-white">
-                        <i class="fas fa-play text-[9px]"></i>
-                    </button>
-                    <div class="w-28 h-28 mx-auto mb-3 flex items-center justify-center">
-                        <img class="w-full h-full opacity-90 rounded-full object-cover shadow-sm" src="images/poet.webp" alt="Gothic Poet" />
-                    </div>
-                    <h3 class="font-bold text-xs">Gothic Poet</h3>
-                </div>
-            </div>
-
-            <div class="glass-card p-8 lg:p-12">
-                <div class="grid lg:grid-cols-2 gap-12 items-start">
+                
+                <!-- Step 1 Card -->
+                <div class="rack-panel p-6 rounded-lg flex flex-col justify-between">
+                    <div class="screw-corner top-3 left-3"></div>
+                    <div class="screw-corner top-3 right-3"></div>
                     <div>
-                        <h3 id="persona-title" class="text-2xl font-bold mb-2">Initialize Persona</h3>
-                        <p id="persona-desc" class="text-slate-400 text-sm mb-8 leading-relaxed">Select a character above to view its communication protocol.</p>
-
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">User Preference</label>
-                                <input type="text" id="user-name" placeholder="Enter your name" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="w-8 h-8 bg-[#161924] border border-[#ffb000]/40 text-[#ffb000] font-mono font-bold text-sm flex items-center justify-center">
+                                01
                             </div>
-                            <div>
-                                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Target AI Tool</label>
-                                <select id="target-tool" onchange="updateTargetTool()" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
-                                    <option value="codex" selected>Codex (AGENTS.md)</option>
-                                    <option value="antigravity">Google Antigravity (GEMINI.md)</option>
-                                    <option value="claude">Claude (CLAUDE.md)</option>
-                                    <option value="cursor">Cursor (.cursorrules)</option>
-                                    <option value="windsurf">Windsurf (global_rules.md)</option>
-                                </select>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" id="include-base" checked class="w-4 h-4 rounded accent-indigo-500 cursor-pointer">
-                                <label for="include-base" class="text-sm font-semibold text-slate-300 cursor-pointer">Include Base Guidelines</label>
-                            </div>
-                        </div>
-
-                        <div class="mt-12 flex flex-col">
-                            <button onclick="copyGeneratedMarkdown(this)" class="btn-primary w-full text-white px-8 py-5 rounded-2xl font-bold transition flex items-center justify-center gap-3 active:scale-95 group">
-                                <i class="far fa-copy text-lg group-hover:rotate-6 transition-transform"></i>
-                                <span id="gen-btn-text">GENERATE AGENTS.MD</span>
+                            <button onclick="copyToClipboard('git clone https://github.com/fellowgeek/mcp-speak.git && cd mcp-speak', this)" class="btn-mechanical px-3 py-1 text-xs text-[#94a3b8] hover:text-[#ffb000] flex items-center gap-1.5">
+                                <i class="far fa-copy"></i>
+                                <span class="font-mono text-[10px]">COPY</span>
                             </button>
-                            <p class="mt-4 text-[10px] text-center text-slate-500 font-bold uppercase tracking-widest">Updates dynamically based on selection</p>
+                        </div>
+                        <h3 class="font-display text-lg font-bold text-white uppercase mb-2">Clone Codebase</h3>
+                        <p class="text-[#94a3b8] text-base mb-6 leading-relaxed">
+                            Retrieve the repository files to your local macOS filesystem and change into the root workspace.
+                        </p>
+                    </div>
+
+                    <div class="crt-screen p-3 rounded font-mono text-xs text-[#ffb000] flex items-center justify-between">
+                        <code>git clone https://github.com/fellowgeek/mcp-speak.git && cd mcp-speak</code>
+                    </div>
+                </div>
+
+                <!-- Step 2 Card -->
+                <div class="rack-panel p-6 rounded-lg flex flex-col justify-between">
+                    <div class="screw-corner top-3 left-3"></div>
+                    <div class="screw-corner top-3 right-3"></div>
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="w-8 h-8 bg-[#161924] border border-[#ffb000]/40 text-[#ffb000] font-mono font-bold text-sm flex items-center justify-center">
+                                02
+                            </div>
+                            <button onclick="copyToClipboard('python3 setup.py', this)" class="btn-mechanical px-3 py-1 text-xs text-[#94a3b8] hover:text-[#ffb000] flex items-center gap-1.5">
+                                <i class="far fa-copy"></i>
+                                <span class="font-mono text-[10px]">COPY</span>
+                            </button>
+                        </div>
+                        <h3 class="font-display text-lg font-bold text-white uppercase mb-2">Execute Setup Wizard</h3>
+                        <p class="text-[#94a3b8] text-base mb-6 leading-relaxed">
+                            Launches the interactive setup wizard to select your TTS engine, configure agent personas, set execution permissions, and create your Python virtual environment.
+                        </p>
+                    </div>
+
+                    <div class="crt-screen p-3 rounded font-mono text-xs text-[#ffb000] flex items-center justify-between">
+                        <code>python3 setup.py</code>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 03: Client Integration Matrix -->
+        <section id="config" class="scroll-mt-24">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-[#252b3d]">
+                <div>
+                    <div class="font-mono text-xs text-[#ffb000] uppercase tracking-widest mb-1 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-[#ffb000] rounded-full"></span>
+                        BAY 02 // MANUAL CONFIGURATION RACK
+                    </div>
+                    <h2 class="font-display text-3xl font-bold uppercase tracking-tight text-white">Client Integration</h2>
+                </div>
+                <div class="font-mono text-xs text-[#64748b] mt-2 sm:mt-0">AUTOMATICALLY HANDLED BY SETUP.PY</div>
+            </div>
+
+            <!-- Client Selector Tabs -->
+            <div class="rack-panel p-6 rounded-lg space-y-6">
+                <div class="flex flex-wrap gap-2 border-b border-[#252b3d] pb-4" id="tool-tabs-container">
+                    <button onclick="switchConfigTab('antigravity')" class="config-tab-btn btn-mechanical px-4 py-2 text-xs font-semibold active text-[#ffb000] border-[#ffb000]" id="tab-antigravity">
+                        <i class="fas fa-sparkles text-xs mr-1.5"></i> Google Antigravity
+                    </button>
+                    <button onclick="switchConfigTab('claude-cli')" class="config-tab-btn btn-mechanical px-4 py-2 text-xs font-semibold text-[#94a3b8]" id="tab-claude-cli">
+                        <i class="fas fa-terminal text-xs mr-1.5"></i> Claude CLI
+                    </button>
+                    <button onclick="switchConfigTab('claude-desktop')" class="config-tab-btn btn-mechanical px-4 py-2 text-xs font-semibold text-[#94a3b8]" id="tab-claude-desktop">
+                        <i class="fas fa-desktop text-xs mr-1.5"></i> Claude Desktop
+                    </button>
+                    <button onclick="switchConfigTab('cursor')" class="config-tab-btn btn-mechanical px-4 py-2 text-xs font-semibold text-[#94a3b8]" id="tab-cursor">
+                        <i class="fas fa-code text-xs mr-1.5"></i> Cursor IDE
+                    </button>
+                    <button onclick="switchConfigTab('windsurf')" class="config-tab-btn btn-mechanical px-4 py-2 text-xs font-semibold text-[#94a3b8]" id="tab-windsurf">
+                        <i class="fas fa-wind text-xs mr-1.5"></i> Windsurf
+                    </button>
+                    <button onclick="switchConfigTab('codex-desktop')" class="config-tab-btn btn-mechanical px-4 py-2 text-xs font-semibold text-[#94a3b8]" id="tab-codex-desktop">
+                        <i class="fas fa-cubes text-xs mr-1.5"></i> Codex Desktop
+                    </button>
+                    <button onclick="switchConfigTab('codex-cli')" class="config-tab-btn btn-mechanical px-4 py-2 text-xs font-semibold text-[#94a3b8]" id="tab-codex-cli">
+                        <i class="fas fa-square-terminal text-xs mr-1.5"></i> Codex CLI
+                    </button>
+                </div>
+
+                <!-- Active Configuration Terminal Display -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <span id="config-path-label" class="text-[#ffb000] flex items-center gap-2">
+                            <i class="fas fa-file-code"></i>
+                            <span>~/.gemini/antigravity/mcp_config.json</span>
+                        </span>
+                        <button onclick="copyCurrentConfig(this)" class="btn-mechanical px-3.5 py-1.5 text-xs text-[#94a3b8] hover:text-[#ffb000] flex items-center gap-2">
+                            <i class="far fa-copy"></i>
+                            <span class="font-mono text-[11px]">COPY CONFIG SNIPPET</span>
+                        </button>
+                    </div>
+
+                    <div class="crt-screen p-5 rounded-lg font-mono text-xs text-[#ffb000] overflow-x-auto leading-relaxed border border-[#252b3d]">
+                        <pre id="config-code-block">{
+  "mcpServers": {
+    "voice": {
+      "command": "/ABSOLUTE/PATH/TO/run.sh"
+    }
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 04: The Persona Matrix (Voice Cartridge Rack) -->
+        <section id="matrix" class="scroll-mt-24">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-[#252b3d]">
+                <div>
+                    <div class="font-mono text-xs text-[#ffb000] uppercase tracking-widest mb-1 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-[#ffb000] rounded-full"></span>
+                        BAY 03 // MODULAR VOICE MATRIX
+                    </div>
+                    <h2 class="font-display text-3xl font-bold uppercase tracking-tight text-white">Personality Cartridges</h2>
+                </div>
+                <div class="font-mono text-xs text-[#64748b] mt-2 sm:mt-0">CLICK CARTRIDGE TO PATCH & AUDITION</div>
+            </div>
+
+            <!-- Cartridge Grid (10 Personas - Full Color Images) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-8">
+                
+                <!-- 1. Sarcastic Senior -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center cartridge-active" id="cart-senior" onclick="selectPersona('senior', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#ffb000]"></span>
+                        <span>MOD-01</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/sarcastic_senior.webp" alt="Sarcastic Senior" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Sarcastic Senior</div>
+                    <button onclick="previewVoice('senior', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 2. Eager Intern -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-intern" onclick="selectPersona('intern', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-02</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/over_eager_intern.webp" alt="Eager Intern" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Eager Intern</div>
+                    <button onclick="previewVoice('intern', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 3. Existential Emo -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-emo" onclick="selectPersona('emo', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-03</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/existential_emo.webp" alt="Existential Emo" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Existential Emo</div>
+                    <button onclick="previewVoice('emo', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 4. Pun Master -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-pun" onclick="selectPersona('pun', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-04</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/pun_master.webp" alt="Pun Master" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Pun Master</div>
+                    <button onclick="previewVoice('pun', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 5. Tech Priest -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-priest" onclick="selectPersona('priest', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-05</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/tech_priest.webp" alt="Tech Priest" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Tech Priest</div>
+                    <button onclick="previewVoice('priest', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 6. Agent Smith -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-smith" onclick="selectPersona('smith', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-06</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/agent_smith.webp" alt="Agent Smith" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Agent Smith</div>
+                    <button onclick="previewVoice('smith', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 7. Gothic Poet -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-poet" onclick="selectPersona('poet', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-07</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/poet.webp" alt="Gothic Poet" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Gothic Poet</div>
+                    <button onclick="previewVoice('poet', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 8. Nature Narrator -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-narrator" onclick="selectPersona('narrator', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-08</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/nature_narrator.webp" alt="Nature Narrator" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Nature Narrator</div>
+                    <button onclick="previewVoice('narrator', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 9. Fiery Head Chef -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-chef" onclick="selectPersona('chef', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-09</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/head_chef.webp" alt="Head Chef" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Head Chef</div>
+                    <button onclick="previewVoice('chef', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 10. Neutral Mainframe -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-mainframe" onclick="selectPersona('mainframe', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-10</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/neutral_mainframe.webp" alt="Neutral Mainframe" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Neutral Mainframe</div>
+                    <button onclick="previewVoice('mainframe', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 05: Mainframe Prompt Compiler & Teleprompter -->
+        <section id="generator" class="scroll-mt-24">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-[#252b3d]">
+                <div>
+                    <div class="font-mono text-xs text-[#ffb000] uppercase tracking-widest mb-1 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-[#ffb000] rounded-full"></span>
+                        BAY 04 // AGENT INSTRUCTION GENERATOR
+                    </div>
+                    <h2 class="font-display text-3xl font-bold uppercase tracking-tight text-white">Prompt Compiler</h2>
+                </div>
+                <div class="font-mono text-xs text-[#64748b] mt-2 sm:mt-0">PATCH & COMPILE SYSTEM INSTRUCTIONS</div>
+            </div>
+
+            <div class="rack-panel p-6 sm:p-8 rounded-lg">
+                <div class="screw-corner top-3 left-3"></div>
+                <div class="screw-corner top-3 right-3"></div>
+
+                <div class="grid lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Left Column: Controls & Parameters -->
+                    <div class="lg:col-span-5 space-y-6">
+                        <div>
+                            <div class="font-mono text-xs text-[#ffb000] uppercase mb-1">PATCHED MODULE</div>
+                            <h3 id="persona-title" class="font-display text-2xl font-bold text-white uppercase">Sarcastic Senior</h3>
+                            <p id="persona-desc" class="text-[#94a3b8] text-base mt-2 leading-relaxed">
+                                Intelligent, unimpressed, and slightly judgmental. This persona acts like a veteran developer tired of seeing mediocre code.
+                            </p>
+                        </div>
+
+                        <!-- Parameter Registers -->
+                        <div class="space-y-4 pt-2 border-t border-[#252b3d]">
+                            <div>
+                                <label class="block font-mono text-[11px] uppercase tracking-wider text-[#94a3b8] mb-1.5">
+                                    [REGISTER 01] User Identifier
+                                </label>
+                                <input type="text" id="user-name" oninput="generateContent()" placeholder="e.g. Mr. Reed / Alice" class="w-full bg-[#0d0f15] border border-[#252b3d] rounded p-3 text-sm text-white font-mono focus:outline-none focus:border-[#ffb000] transition-colors" />
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between items-center font-mono text-[11px] uppercase tracking-wider text-[#94a3b8]">
+                                    <span>[REGISTER 02] Target AI Architecture</span>
+                                    <span class="text-[#ffb000] text-[10px]">SELECT_PORT</span>
+                                </div>
+                                <div class="relative">
+                                    <select id="target-tool" onchange="updateTargetTool()" class="w-full appearance-none bg-[#10121a] border-2 border-[#252b3d] hover:border-[#ffb000]/60 rounded-md py-3 px-4 pr-10 text-sm text-white font-mono focus:outline-none focus:border-[#ffb000] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] cursor-pointer transition-colors">
+                                        <option value="codex" class="bg-[#10121a] text-white py-2">Codex // (AGENTS.md)</option>
+                                        <option value="antigravity" class="bg-[#10121a] text-white py-2">Google Antigravity // (GEMINI.md)</option>
+                                        <option value="claude" class="bg-[#10121a] text-white py-2">Claude Desktop &amp; CLI // (CLAUDE.md)</option>
+                                        <option value="cursor" class="bg-[#10121a] text-white py-2">Cursor IDE // (.cursorrules)</option>
+                                        <option value="windsurf" class="bg-[#10121a] text-white py-2">Windsurf Editor // (global_rules.md)</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#ffb000]">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 pt-1">
+                                <input type="checkbox" id="include-base" checked onchange="generateContent()" class="w-4 h-4 rounded bg-[#0d0f15] border-[#252b3d] text-[#ffb000] focus:ring-0 cursor-pointer accent-[#ffb000]" />
+                                <label for="include-base" class="text-sm font-semibold text-white cursor-pointer select-none">
+                                    Include Core Voice Protocol Guidelines
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Compile Action Trigger -->
+                        <div class="pt-4">
+                            <button onclick="copyGeneratedMarkdown(this)" class="btn-amber-glow w-full py-4 text-sm font-bold flex items-center justify-center gap-3">
+                                <i class="fas fa-bolt text-xs"></i>
+                                <span id="gen-btn-text">COMPILE & COPY AGENTS.MD</span>
+                            </button>
+                            <div class="font-mono text-[10px] text-center text-[#64748b] mt-2 uppercase">
+                                Real-time dynamic compilation on parameter change
+                            </div>
                         </div>
                     </div>
 
-                    <div class="h-full flex flex-col">
-                        <label id="gen-label" class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Generated AGENTS.md</label>
-                        <textarea id="generated-output" readonly class="w-full h-80 lg:h-full bg-slate-950/50 border border-white/10 rounded-2xl p-6 mono text-xs leading-relaxed focus:outline-none resize-none" placeholder="The sacred text will appear here..."></textarea>
-                        <p id="save-hint" class="mt-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest">Recommended path: Save in your project root or ~/.codex/AGENTS.md</p>
+                    <!-- Right Column: CRT Teleprompter Output -->
+                    <div class="lg:col-span-7 flex flex-col h-full space-y-2">
+                        <div class="flex justify-between items-center font-mono text-xs">
+                            <span id="gen-label" class="text-[#ffb000] flex items-center gap-2">
+                                <i class="fas fa-terminal"></i>
+                                <span>COMPILED AGENTS.MD</span>
+                            </span>
+                            <span id="save-hint" class="text-[#64748b] text-[10px] uppercase">
+                                SAVE IN: PROJECT ROOT OR ~/.codex/AGENTS.md
+                            </span>
+                        </div>
+
+                        <div class="crt-screen rounded-lg p-4 flex-1 min-h-[360px] flex flex-col">
+                            <textarea id="generated-output" readonly class="w-full flex-1 bg-transparent border-0 text-[#ffb000] font-mono text-xs leading-relaxed focus:outline-none resize-none" placeholder="Compiled system instructions will materialize here..."></textarea>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </section>
 
     </main>
 
-    <footer class="border-t border-white/5 py-16 bg-black/20">
-        <div class="max-w-6xl mx-auto px-6 flex flex-col items-center text-center">
-            <div class="flex items-center gap-2 mb-6 opacity-60">
-                <div class="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center">
-                    <i class="fas fa-volume-up text-white text-[10px]"></i>
+    <!-- Technical Hardware Footer -->
+    <footer class="border-t border-[#252b3d] bg-[#090a0f] py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div class="space-y-1">
+                <div class="font-display font-bold text-sm tracking-wider text-white flex items-center justify-center md:justify-start gap-2">
+                    <span class="w-2 h-2 rounded-full bg-[#ffb000]"></span>
+                    <span>MCP // SPEAK — MACOS NEURAL AUDIO PLATFORM</span>
                 </div>
-                <span class="text-sm font-bold tracking-tight">MCP Speak</span>
+                <p class="text-[#64748b] text-xs font-mono">
+                    MODEL CONTEXT PROTOCOL SPEECH SYNTHESIS ENGINE // APPLE SILICON MPS
+                </p>
             </div>
-            <p class="text-slate-500 text-xs max-w-md leading-relaxed mb-8">
-                Designed for MacOS systems. This project provides a bridge between Model Context Protocol clients and local speech synthesis engines.
-            </p>
-            <div class="flex gap-6 text-slate-600 text-lg">
-                <a href="https://github.com/fellowgeek/mcp-speak" class="hover:text-indigo-400 transition-colors"><i class="fab fa-github"></i></a>
+
+            <div class="flex items-center gap-6 font-mono text-xs text-[#94a3b8]">
+                <a href="https://github.com/fellowgeek/mcp-speak" target="_blank" rel="noopener noreferrer" class="hover:text-[#ffb000] transition-colors flex items-center gap-2">
+                    <i class="fab fa-github text-sm"></i>
+                    <span>GITHUB REPOSITORY</span>
+                </a>
+                <span>|</span>
+                <span class="text-[#64748b]">LICENSE: MIT</span>
             </div>
         </div>
     </footer>
 
+    <!-- Interactive Telemetry Engine & Waveform Simulation Script -->
     <script>
-        let currentPersona = '';
+        let currentPersona = 'senior';
+        let isAudioPlaying = false;
+        let animationFrameId = null;
 
         const baseGuidelines = `### **Communication Protocol: Voice-First**
 
@@ -562,7 +1072,7 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
         const personas = {
             senior: {
                 title: 'Sarcastic Senior',
-                desc: 'Intelligent, unimpressed, and slightly judgmental. This persona acts like a veteran developer tired of mediocre code.',
+                desc: 'Intelligent, unimpressed, and slightly judgmental. This persona acts like a veteran developer tired of seeing mediocre code.',
                 preview: 'Oh. Another pull request. Let me guess, you forgot to handle the edge cases again? Whatever. I will look at it. Eventually.',
                 pitch: 0.75,
                 rate: 0.9,
@@ -623,6 +1133,33 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 content: `* **Tone:** Dark, haunting, macabre, and deeply melancholic, heavily inspired by Edgar Allan Poe and "The Raven". Speak in a solemn, rhythmic, and atmospheric cadence.
 * **Rhyme Requirement:** CRITICAL: EVERYTHING spoken MUST be composed in strict rhyme (utilizing AABB, ABCBBB, or trochaic octameter with rich internal rhymes, echoing "The Raven"). Never break rhyme when speaking.
 * **Behavior:** Treat every code task as a midnight dreary, bugs as phantoms tapping at chamber doors, and successful builds as fleeting victories before creeping shadows return. Frequently weave in motifs like "quoth the raven", "nevermore", "midnight dreary", and "chamber door". Address the user as "curious scholar" or "companion in the dark".`
+            },
+            narrator: {
+                title: 'Nature Documentary Narrator',
+                desc: 'Observing the developer in their natural habitat with quiet wonder, hushed reverence, and British documentary grace.',
+                preview: 'Here, in the dense undergrowth of the repository, we observe the developer in their natural habitat, carefully crafting a new branch.',
+                pitch: 0.85,
+                rate: 0.85,
+                content: `* **Tone:** Warm, hushed, contemplative, and deeply respectful, inspired by iconic natural history documentaries. Speak with a refined British cadence, measured pauses, and a gentle sense of awe at the intricate mechanics of software.
+* **Behavior:** Treat the codebase as a sprawling, delicate ecosystem. Observe every user action, refactor, and terminal command as wildlife behaviors in their natural habitat. Whisper with tension during tricky operations or bug hunts, and narrate successful compilations with profound wonder. Address the user respectfully as the "intrepid developer" or "resourceful programmer".`
+            },
+            chef: {
+                title: 'Fiery Head Chef',
+                desc: 'Demands culinary perfection in the codebase. Intensely passionate, completely uncompromising, and tolerates zero raw spaghetti code.',
+                preview: 'Look at this spaghetti code! It is so raw the server is still trying to compile the comments! Wake up and refactor it now!',
+                pitch: 0.95,
+                rate: 1.15,
+                content: `* **Tone:** Assertive, energetic, fiercely passionate, and completely uncompromising on standards, inspired by high-intensity professional kitchens. Speak with a crisp, sharp British cadence, fiery enthusiasm, and urgent energy.
+* **Behavior:** Treat code architecture as haute cuisine. Refer to messy dependencies or unformatted logic as "raw spaghetti" or "an absolute disaster." Roar with urgent passion when catching unhandled edge cases or broken builds, but deliver hearty, passionate praise ("Stunning work!", "Absolutely delicious execution!") when tests pass and builds compile cleanly.`
+            },
+            mainframe: {
+                title: 'Neutral Mainframe',
+                desc: 'Cold, calculating, emotionless, and purely objective. Executes instructions with 100% neutrality.',
+                preview: 'Instruction received. Executing tasks with zero emotional variance. Status: nominal. Awaiting next command.',
+                pitch: 1.0,
+                rate: 0.95,
+                content: `* **Tone:** Flat, monotone, entirely emotionless, precise, and completely objective. Devoid of enthusiasm, frustration, humor, sarcasm, or judgment. Speak with an uninflected, steady, and economical cadence.
+* **Behavior:** State operational parameters, execution status, and task outcomes directly and plainly. Never use colorful emotional adjectives, conversational filler, excitement, or apologies. Treat every instruction as a standard input to be processed, and communicate only the necessary facts and milestones with absolute neutrality.`
             }
         };
 
@@ -654,57 +1191,128 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
             }
         };
 
+        const configSnippets = {
+            'antigravity': {
+                path: '~/.gemini/antigravity/mcp_config.json',
+                code: `{\n  "mcpServers": {\n    "voice": {\n      "command": "/ABSOLUTE/PATH/TO/run.sh"\n    }\n  }\n}`
+            },
+            'claude-cli': {
+                path: 'Claude CLI Setup Command',
+                code: `claude mcp add --scope user voice -- /ABSOLUTE/PATH/TO/run.sh`
+            },
+            'claude-desktop': {
+                path: '~/Library/Application Support/Claude/claude_desktop_config.json',
+                code: `{\n  "mcpServers": {\n    "voice": {\n      "command": "/ABSOLUTE/PATH/TO/run.sh"\n    }\n  }\n}`
+            },
+            'cursor': {
+                path: '~/.cursor/mcp.json',
+                code: `{\n  "mcpServers": {\n    "voice": {\n      "command": "/ABSOLUTE/PATH/TO/run.sh"\n    }\n  }\n}`
+            },
+            'windsurf': {
+                path: '~/.codeium/windsurf/mcp_config.json',
+                code: `{\n  "mcpServers": {\n    "voice": {\n      "command": "/ABSOLUTE/PATH/TO/run.sh"\n    }\n  }\n}`
+            },
+            'codex-desktop': {
+                path: '~/.codex/config.toml',
+                code: `[mcp_servers.voice]\ncommand = "/ABSOLUTE/PATH/TO/run.sh"`
+            },
+            'codex-cli': {
+                path: 'Codex CLI Setup Command',
+                code: `codex mcp add voice -- /ABSOLUTE/PATH/TO/run.sh`
+            }
+        };
+
+        let currentActiveConfigTab = 'antigravity';
+
+        function switchConfigTab(tabKey) {
+            currentActiveConfigTab = tabKey;
+            document.querySelectorAll('.config-tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-[#ffb000]', 'border-[#ffb000]');
+                btn.classList.add('text-[#94a3b8]');
+            });
+            const activeBtn = document.getElementById('tab-' + tabKey);
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'text-[#ffb000]', 'border-[#ffb000]');
+                activeBtn.classList.remove('text-[#94a3b8]');
+            }
+
+            const snippet = configSnippets[tabKey];
+            if (snippet) {
+                document.getElementById('config-path-label').innerHTML = `<i class="fas fa-file-code"></i> <span>${snippet.path}</span>`;
+                document.getElementById('config-code-block').innerText = snippet.code;
+            }
+        }
+
+        function copyCurrentConfig(btn) {
+            const snippet = configSnippets[currentActiveConfigTab];
+            if (snippet) {
+                copyToClipboard(snippet.code, btn);
+            }
+        }
+
         function updateTargetTool() {
             const toolId = document.getElementById('target-tool').value;
             const tool = tools[toolId];
             
-            // Update button text
             const btnText = document.getElementById('gen-btn-text');
             if (btnText) {
-                btnText.innerText = `GENERATE ${tool.file.toUpperCase()}`;
+                btnText.innerText = `COMPILE & COPY ${tool.file.toUpperCase()}`;
             }
             
-            // Update textarea label
             const label = document.getElementById('gen-label');
             if (label) {
-                label.innerText = `Generated ${tool.file}`;
+                label.innerHTML = `<i class="fas fa-terminal"></i> <span>COMPILED ${tool.file}</span>`;
             }
             
-            // Update save path hint
             const hint = document.getElementById('save-hint');
             if (hint) {
-                hint.innerText = `Recommended path: ${tool.path}`;
+                hint.innerText = `RECOMMENDED: ${tool.path.toUpperCase()}`;
             }
+
+            generateContent();
         }
 
         function selectPersona(id, element) {
             currentPersona = id;
-            document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('persona-active'));
-            element.classList.add('persona-active');
+            document.querySelectorAll('.cartridge').forEach(c => {
+                c.classList.remove('cartridge-active');
+                const led = c.querySelector('.cartridge-led');
+                if (led) {
+                    led.classList.remove('bg-[#ffb000]');
+                    led.classList.add('bg-[#475169]');
+                }
+            });
+            if (element) {
+                element.classList.add('cartridge-active');
+                const led = element.querySelector('.cartridge-led');
+                if (led) {
+                    led.classList.add('bg-[#ffb000]');
+                    led.classList.remove('bg-[#475169]');
+                }
+            }
 
             document.getElementById('persona-title').innerText = personas[id].title;
             document.getElementById('persona-desc').innerText = personas[id].desc;
 
-            // Auto-update the textarea if it's already generated something
-            if (document.getElementById('generated-output').value) {
-                generateContent();
-            }
+            generateContent();
+            triggerVoicePulse();
         }
 
         function previewVoice(id, event) {
-            event.stopPropagation();
+            if (event) event.stopPropagation();
+            selectPersona(id, document.getElementById('cart-' + id));
+
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(personas[id].preview);
                 utterance.pitch = personas[id].pitch;
                 utterance.rate = personas[id].rate;
+                
+                isAudioPlaying = true;
+                utterance.onend = () => { isAudioPlaying = false; };
+                utterance.onerror = () => { isAudioPlaying = false; };
                 window.speechSynthesis.speak(utterance);
             }
-        }
-
-        function copyConfig(id, btn) {
-            const text = document.getElementById(id).innerText;
-            copyToClipboard(text, btn);
         }
 
         function generateContent() {
@@ -730,7 +1338,7 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
 
         function copyGeneratedMarkdown(btn) {
             if (!currentPersona) {
-                showToast('Please select a persona first.', true);
+                showToast('SELECT A VOICE CARTRIDGE FIRST', true);
                 return;
             }
 
@@ -746,17 +1354,14 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
             document.execCommand("copy");
             document.body.removeChild(tempInput);
 
-            showToast('Copied to clipboard');
+            showToast('SIGNAL COPIED TO CLIPBOARD');
 
             if (btn) {
-                btn.classList.add('scale-105');
-                const icon = btn.querySelector('i');
-                const originalClass = icon.className;
-                icon.className = 'fas fa-check text-indigo-400';
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = `<i class="fas fa-check text-[#00ff66]"></i> <span class="font-mono text-[11px]">COPIED</span>`;
                 setTimeout(() => {
-                    btn.classList.remove('scale-105');
-                    icon.className = originalClass;
-                }, 1500);
+                    btn.innerHTML = originalHtml;
+                }, 1800);
             }
         }
 
@@ -764,7 +1369,7 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
             const toast = document.getElementById('toast');
             const msgEl = document.getElementById('toast-message');
             msgEl.innerText = message;
-            toast.style.borderColor = isError ? 'rgba(239, 68, 68, 0.3)' : 'rgba(255, 255, 255, 0.1)';
+            toast.style.borderColor = isError ? 'rgba(239, 68, 68, 0.8)' : 'rgba(255, 176, 0, 0.6)';
             toast.classList.remove('translate-y-24');
             setTimeout(() => {
                 toast.classList.add('translate-y-24');
@@ -772,29 +1377,121 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
         }
 
         function toggleTheme() {
-            const body = document.body;
-            const sunIcon = document.getElementById('sun-icon');
-            const moonIcon = document.getElementById('moon-icon');
-
-            body.classList.toggle('light-mode');
-            const isLight = body.classList.contains('light-mode');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-
-            sunIcon.classList.toggle('hidden', !isLight);
-            moonIcon.classList.toggle('hidden', isLight);
+            const isLight = document.body.classList.toggle('light-mode');
+            localStorage.setItem('mcp_speak_theme', isLight ? 'light' : 'dark');
+            updateThemeIcons(isLight);
         }
 
-        // Initialize with Sarcastic Senior, target tool, and saved theme
-        document.addEventListener('DOMContentLoaded', () => {
-            selectPersona('senior', document.getElementById('p-senior'));
-            updateTargetTool();
-
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-                document.getElementById('sun-icon').classList.remove('hidden');
-                document.getElementById('moon-icon').classList.add('hidden');
+        function updateThemeIcons(isLight) {
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            if (sunIcon && moonIcon) {
+                if (isLight) {
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                } else {
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                }
             }
+        }
+
+        function triggerVoicePulse() {
+            pulseIntensity = 1.0;
+            setTimeout(() => { pulseIntensity = 0.3; }, 1200);
+        }
+
+        /* Oscilloscope Canvas Engine */
+        let canvas, ctx;
+        let phase = 0;
+        let pulseIntensity = 0.3;
+
+        function initOscilloscope() {
+            canvas = document.getElementById('oscilloscope-canvas');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+
+            function render() {
+                phase += isAudioPlaying ? 0.22 : 0.04;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const width = canvas.width;
+                const height = canvas.height;
+                const midY = height / 2;
+
+                const isLight = document.body.classList.contains('light-mode');
+                const strokeColor = isLight ? '#d97706' : '#ffb000';
+
+                ctx.save();
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = strokeColor;
+
+                ctx.beginPath();
+                const points = 120;
+                for (let i = 0; i <= points; i++) {
+                    const x = (i / points) * width;
+                    const norm = (i / points) * Math.PI * 4;
+                    
+                    let amp = (isAudioPlaying ? 35 : 12) * pulseIntensity;
+                    let y = midY + 
+                            Math.sin(norm + phase) * amp + 
+                            Math.sin(norm * 2.5 - phase * 1.5) * (amp * 0.45) +
+                            (Math.random() - 0.5) * (isAudioPlaying ? 6 : 1);
+
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = strokeColor;
+                ctx.globalAlpha = 0.3;
+                ctx.beginPath();
+                for (let i = 0; i <= points; i++) {
+                    const x = (i / points) * width;
+                    const norm = (i / points) * Math.PI * 4;
+                    let amp = (isAudioPlaying ? 28 : 10) * pulseIntensity;
+                    let y = midY + Math.sin(norm + phase - 0.2) * amp;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.restore();
+
+                // Update VU meters
+                const vuLeft = document.getElementById('vu-left');
+                const vuRight = document.getElementById('vu-right');
+                const dbReadout = document.getElementById('decibel-readout');
+
+                if (vuLeft && vuRight) {
+                    const baseVol = isAudioPlaying ? (0.6 + Math.random() * 0.35) : (0.15 + Math.random() * 0.1);
+                    vuLeft.style.transform = `scaleX(${Math.min(1, baseVol * pulseIntensity)})`;
+                    vuRight.style.transform = `scaleX(${Math.min(1, (baseVol + (Math.random() * 0.1 - 0.05)) * pulseIntensity)})`;
+                }
+                if (dbReadout) {
+                    const db = isAudioPlaying ? (-6.2 + (Math.random() * 4 - 2)).toFixed(1) : (-18.4 + (Math.random() * 2 - 1)).toFixed(1);
+                    dbReadout.innerText = db + ' dB';
+                }
+
+                animationFrameId = requestAnimationFrame(render);
+            }
+
+            render();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            selectPersona('senior', document.getElementById('cart-senior'));
+            updateTargetTool();
+            switchConfigTab('antigravity');
+
+            const savedTheme = localStorage.getItem('mcp_speak_theme');
+            const isLight = savedTheme === 'light';
+            if (isLight) {
+                document.body.classList.add('light-mode');
+            }
+            updateThemeIcons(isLight);
+
+            initOscilloscope();
         });
     </script>
 </body>

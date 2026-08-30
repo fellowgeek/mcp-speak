@@ -2,4 +2,10 @@
 .GEMINI.md
 AGENTS.md
 .claude/settings.local.json
-__pycache__/setup.cpython-314.pyc
+__pycache__/
+*.pyc
+.venv.backup-py314/
+.venv/
+memory/
+.mcp_memory/
+.impeccable/
