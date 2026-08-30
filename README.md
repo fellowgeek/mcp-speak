@@ -4,7 +4,9 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
 
 **Note: This server is designed for macOS systems (with Apple Silicon MPS acceleration).**
 
-[MCP Speak Website](https://fellowgeek.github.io/mcp-speak/)
+[![MCP Speak Persona Fleet](images/personalities.png)](https://fellowgeek.github.io/mcp-speak/)
+
+> 🎙️ **Explore the interactive web showcase and prompt compiler**: [https://fellowgeek.github.io/mcp-speak/](https://fellowgeek.github.io/mcp-speak/)
 
 ## Features
 
