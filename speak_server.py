@@ -28,6 +28,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "engine": "omnivoice",
     "persona": "agent_smith",
     "device": "auto",
+    "voices_dir": "voices",
     "fallback_to_say": True,
     "voice_designs": {
         "agent_smith": {
@@ -92,6 +93,8 @@ def load_config() -> Dict[str, Any]:
         config["persona"] = os.environ["MCP_SPEAK_PERSONA"].strip().lower()
     if "MCP_SPEAK_DEVICE" in os.environ:
         config["device"] = os.environ["MCP_SPEAK_DEVICE"].strip().lower()
+    if "MCP_SPEAK_VOICES_DIR" in os.environ:
+        config["voices_dir"] = os.environ["MCP_SPEAK_VOICES_DIR"].strip()
 
     return config
 
@@ -104,7 +107,7 @@ class SayEngine:
 
 
 class OmniVoiceEngine:
-    """Neural TTS engine using OmniVoice with zero-shot Voice Design and pipelined streaming."""
+    """Neural TTS engine using OmniVoice with zero-shot Voice Design, Voice Cloning, and pipelined streaming."""
 
     def __init__(self, config: Dict[str, Any]):
         self.config = config
@@ -112,6 +115,7 @@ class OmniVoiceEngine:
         self.device = None
         self._lock = threading.Lock()
         self._fallback_say = SayEngine()
+        self._voice_clone_prompts: Dict[str, Any] = {}
 
     def _resolve_device(self) -> str:
         req_dev = self.config.get("device", "auto").lower()
@@ -143,14 +147,102 @@ class OmniVoiceEngine:
                 print("[mcp-speak] OmniVoice model loaded successfully.", file=sys.stderr)
         return self.model
 
-    def _synthesize_to_file(self, text: str, instruct: str, speed: float) -> str:
+    def _get_voices_dir(self) -> Path:
+        """Resolve the path to the voices directory."""
+        configured_dir = Path(self.config.get("voices_dir", "voices"))
+        if configured_dir.is_absolute():
+            return configured_dir
+        return SCRIPT_DIR / configured_dir
+
+    def _resolve_voice_clone_prompt(self, persona_name: str) -> Optional[Any]:
+        """
+        Check if a reference voice file exists for the persona and load/generate its VoiceClonePrompt.
+        Caches the prompt in memory for subsequent speech calls.
+        """
+        if persona_name in self._voice_clone_prompts:
+            return self._voice_clone_prompts[persona_name]
+
+        voices_dir = self._get_voices_dir()
+        if not voices_dir.exists():
+            return None
+
+        pt_file = voices_dir / f"{persona_name}.pt"
+        wav_file = voices_dir / f"{persona_name}.wav"
+
+        # Check for pre-saved VoiceClonePrompt .pt file
+        if pt_file.exists():
+            try:
+                from omnivoice.models.omnivoice import VoiceClonePrompt
+
+                prompt = VoiceClonePrompt.load(str(pt_file))
+                self._voice_clone_prompts[persona_name] = prompt
+                print(
+                    f"[mcp-speak] Loaded pre-cached voice clone prompt for persona '{persona_name}' from {pt_file.name}",
+                    file=sys.stderr,
+                )
+                return prompt
+            except Exception as e:
+                print(
+                    f"[mcp-speak] Warning: Failed to load cached prompt {pt_file.name}: {e}",
+                    file=sys.stderr,
+                )
+
+        # Check for reference WAV file
+        if wav_file.exists():
+            try:
+                txt_file = voices_dir / f"{persona_name}.txt"
+                ref_text = None
+                if txt_file.exists():
+                    try:
+                        ref_text = txt_file.read_text(encoding="utf-8").strip()
+                    except Exception as e:
+                        print(
+                            f"[mcp-speak] Warning: Failed to read transcript {txt_file.name}: {e}",
+                            file=sys.stderr,
+                        )
+
+                model = self._get_model()
+                print(
+                    f"[mcp-speak] Creating voice clone prompt from '{wav_file.name}' for persona '{persona_name}' "
+                    f"(transcript provided: {ref_text is not None})...",
+                    file=sys.stderr,
+                )
+                prompt = model.create_voice_clone_prompt(
+                    ref_audio=str(wav_file),
+                    ref_text=ref_text,
+                )
+                self._voice_clone_prompts[persona_name] = prompt
+                return prompt
+            except Exception as e:
+                print(
+                    f"[mcp-speak] Warning: Failed to create voice clone prompt from {wav_file.name}: {e}",
+                    file=sys.stderr,
+                )
+                return None
+
+        return None
+
+    def _synthesize_to_file(
+        self,
+        text: str,
+        instruct: Optional[str] = None,
+        speed: float = 1.0,
+        voice_clone_prompt: Optional[Any] = None,
+    ) -> str:
         """Synthesize speech for a complete text message and write to a temporary WAV file."""
         model = self._get_model()
-        audios = model.generate(
-            text=text,
-            instruct=instruct,
-            speed=speed,
-        )
+        if voice_clone_prompt is not None:
+            audios = model.generate(
+                text=text,
+                voice_clone_prompt=voice_clone_prompt,
+                speed=speed,
+            )
+        else:
+            audios = model.generate(
+                text=text,
+                instruct=instruct,
+                speed=speed,
+            )
 
         if not audios or len(audios) == 0:
             raise RuntimeError("OmniVoice produced empty audio output.")
@@ -169,6 +261,7 @@ class OmniVoiceEngine:
     def speak(self, message: str) -> None:
         """
         Speak a message using OmniVoice neural voice synthesis.
+        Prefers cloned voice if reference audio exists, otherwise falls back to Voice Design.
         Synthesizes the complete message in a single continuous pass to maintain voice consistency.
         """
         if not message or not message.strip():
@@ -181,11 +274,25 @@ class OmniVoiceEngine:
                 persona_name,
                 {"instruct": "male, middle-aged, low pitch, american accent", "speed": 1.0},
             )
-
-            instruct = persona_cfg.get("instruct", "male, middle-aged, low pitch, american accent")
             speed = persona_cfg.get("speed", 1.0)
 
-            temp_wav_path = self._synthesize_to_file(message, instruct, speed)
+            # Check if reference audio exists for persona voice cloning
+            voice_clone_prompt = self._resolve_voice_clone_prompt(persona_name)
+
+            if voice_clone_prompt is not None:
+                temp_wav_path = self._synthesize_to_file(
+                    text=message,
+                    speed=speed,
+                    voice_clone_prompt=voice_clone_prompt,
+                )
+            else:
+                instruct = persona_cfg.get("instruct", "male, middle-aged, low pitch, american accent")
+                temp_wav_path = self._synthesize_to_file(
+                    text=message,
+                    instruct=instruct,
+                    speed=speed,
+                )
+
             try:
                 subprocess.run(["afplay", temp_wav_path], check=True)
             finally:

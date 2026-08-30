@@ -9,3 +9,10 @@ __pycache__/
 memory/
 .mcp_memory/
 .impeccable/
+voices/*.wav
+voices/*.mp3
+voices/*.pt
+voices/*.m4a
+voices/*.txt
+!voices/README.md
+config.json

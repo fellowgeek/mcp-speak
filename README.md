@@ -10,7 +10,9 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
 
 ## Features
 
-- **OmniVoice Neural Voice Design:** Generates custom persona voices from natural language style prompts with zero reference audio required.
+- **OmniVoice Voice Cloning:** Drop reference audio clips into `voices/<persona>.wav` to clone real vocal timbre and identity with zero configuration.
+- **OmniVoice Voice Design Fallback:** Generates custom persona voices from natural language style prompts when no reference audio file is present.
+- **3-Tier Robust Voice Pipeline:** Seamlessly falls back: `Cloned Voice (.wav)` ➔ `Voice Design (instruct)` ➔ `macOS native say`.
 - **Consistent Neural Speech:** Generates complete messages in a continuous synthesis pass for seamless, uniform vocal timbre and expression throughout.
 - **Interactive Setup Wizard:** Run `python3 setup.py` to choose your TTS engine (OmniVoice or macOS `say`), select agent personas, and generate instruction files (`AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `.cursorrules`).
 - **Sequential Speech Queue:** Strict FIFO queue ensures multiple non-blocking speech calls never talk over each other.
@@ -77,7 +79,32 @@ python3 test_personas.py --all
 
 # Test with custom speech text and specific engine
 python3 test_personas.py --persona neutral_mainframe --engine omnivoice --text "System operational. All parameters within nominal thresholds."
+
+# Audition an arbitrary WAV audio reference file for voice cloning
+python3 test_personas.py --persona pun_master --voice-file voices/pun_master.wav
 ```
+
+---
+
+## 🎙️ Neural Voice Cloning (`voices/`)
+
+You can clone any persona's voice simply by dropping a 3-10 second `.wav` audio sample into the `voices/` directory:
+
+```
+voices/
+├── README.md
+├── pun_master.wav         # Reference audio for pun_master
+├── pun_master.txt         # (Optional) Transcript for faster startup without Whisper
+├── nature_narrator.wav
+└── agent_smith.wav
+```
+
+### How the 3-Tier Voice Pipeline Works:
+1. **Tier 1 (Cloned Voice):** If `voices/<persona_name>.wav` exists, OmniVoice clones the voice timbre from that recording.
+2. **Tier 2 (Voice Design):** If no `.wav` file is present, OmniVoice falls back to the natural language `instruct` voice design prompt.
+3. **Tier 3 (macOS Native Fallback):** If neural synthesis fails or is disabled, the server automatically speaks using macOS `say`.
+
+> 💡 **Tip:** Adding an optional transcript file (e.g. `voices/pun_master.txt`) with the exact spoken words in the audio allows OmniVoice to tokenize the reference audio immediately without needing to load or run the Whisper ASR model.
 
 ---
 
@@ -101,6 +128,7 @@ The server loads configuration from `config.json` at startup:
   "engine": "omnivoice",
   "persona": "neutral_mainframe",
   "device": "auto",
+  "voices_dir": "voices",
   "fallback_to_say": true
 }
 ```
@@ -112,6 +140,7 @@ Runtime parameters can be overridden via environment variables without modifying
 * `MCP_SPEAK_ENGINE`: Set to `"omnivoice"` or `"say"`.
 * `MCP_SPEAK_PERSONA`: Set to any persona key (e.g. `"agent_smith"`, `"neutral_mainframe"`).
 * `MCP_SPEAK_DEVICE`: Set to `"auto"`, `"mps"`, `"cuda"`, or `"cpu"`.
+* `MCP_SPEAK_VOICES_DIR`: Set to a custom directory path containing reference audio files.
 
 ---
 

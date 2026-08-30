@@ -93,7 +93,7 @@ class TestSpeakServer(unittest.TestCase):
 
         # Verify synthesize was called once with the complete message
         engine._synthesize_to_file.assert_called_once_with(
-            message, "neutral, monotone", 1.0
+            text=message, instruct="neutral, monotone", speed=1.0
         )
 
         # Verify afplay was invoked with the temporary file
@@ -155,6 +155,119 @@ class TestSpeakServer(unittest.TestCase):
                 "end:Message 3",
             ],
         )
+
+    @patch("subprocess.run")
+    def test_voice_clone_mode_when_wav_present(self, mock_run):
+        """Verify that OmniVoice uses voice cloning when reference WAV and optional transcript TXT exist."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir_path = Path(temp_dir)
+            wav_file = temp_dir_path / "pun_master.wav"
+            txt_file = temp_dir_path / "pun_master.txt"
+            wav_file.write_bytes(b"dummy_wav_data")
+            txt_file.write_text("This is a sample reference transcript.", encoding="utf-8")
+
+            config = {
+                "engine": "omnivoice",
+                "persona": "pun_master",
+                "voices_dir": str(temp_dir_path),
+                "fallback_to_say": False,
+                "voice_designs": {
+                    "pun_master": {"instruct": "male, witty", "speed": 1.05}
+                },
+            }
+            engine = OmniVoiceEngine(config)
+
+            # Mock model
+            mock_model = MagicMock()
+            mock_prompt = MagicMock()
+            mock_model.create_voice_clone_prompt.return_value = mock_prompt
+            mock_model.generate.return_value = [[0.0] * 24000]
+            mock_model.sampling_rate = 24000
+            engine._get_model = MagicMock(return_value=mock_model)
+
+            with patch("soundfile.write"):
+                engine.speak("Testing cloned speech synthesis.")
+
+            # Verify create_voice_clone_prompt was called with the wav path and transcript text
+            mock_model.create_voice_clone_prompt.assert_called_once_with(
+                ref_audio=str(wav_file),
+                ref_text="This is a sample reference transcript.",
+            )
+
+            # Verify generate was called with voice_clone_prompt
+            mock_model.generate.assert_called_once_with(
+                text="Testing cloned speech synthesis.",
+                voice_clone_prompt=mock_prompt,
+                speed=1.05,
+            )
+
+    @patch("subprocess.run")
+    def test_voice_clone_prompt_caching(self, mock_run):
+        """Verify that VoiceClonePrompt is cached in memory across multiple speak calls."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir_path = Path(temp_dir)
+            wav_file = temp_dir_path / "nature_narrator.wav"
+            wav_file.write_bytes(b"dummy_wav_data")
+
+            config = {
+                "engine": "omnivoice",
+                "persona": "nature_narrator",
+                "voices_dir": str(temp_dir_path),
+                "fallback_to_say": False,
+                "voice_designs": {
+                    "nature_narrator": {"instruct": "male, narrator", "speed": 0.95}
+                },
+            }
+            engine = OmniVoiceEngine(config)
+
+            mock_model = MagicMock()
+            mock_prompt = MagicMock()
+            mock_model.create_voice_clone_prompt.return_value = mock_prompt
+            mock_model.generate.return_value = [[0.0] * 24000]
+            mock_model.sampling_rate = 24000
+            engine._get_model = MagicMock(return_value=mock_model)
+
+            with patch("soundfile.write"):
+                engine.speak("Sentence one.")
+                engine.speak("Sentence two.")
+
+            # create_voice_clone_prompt should only be called once because of prompt caching
+            self.assertEqual(mock_model.create_voice_clone_prompt.call_count, 1)
+            self.assertEqual(mock_model.generate.call_count, 2)
+
+    @patch("subprocess.run")
+    def test_fallback_to_voice_design_when_wav_absent(self, mock_run):
+        """Verify that OmniVoice falls back to instruction-based Voice Design when no WAV file exists."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Empty voices dir
+            config = {
+                "engine": "omnivoice",
+                "persona": "sarcastic_senior",
+                "voices_dir": str(temp_dir),
+                "fallback_to_say": False,
+                "voice_designs": {
+                    "sarcastic_senior": {"instruct": "male, sarcastic, low pitch", "speed": 1.0}
+                },
+            }
+            engine = OmniVoiceEngine(config)
+
+            mock_model = MagicMock()
+            mock_model.generate.return_value = [[0.0] * 24000]
+            mock_model.sampling_rate = 24000
+            engine._get_model = MagicMock(return_value=mock_model)
+
+            with patch("soundfile.write"):
+                engine.speak("Hello there.")
+
+            # Voice clone prompt should not be created
+            mock_model.create_voice_clone_prompt.assert_not_called()
+
+            # Voice design instruct should be used
+            mock_model.generate.assert_called_once_with(
+                text="Hello there.",
+                instruct="male, sarcastic, low pitch",
+                speed=1.0,
+            )
 
 
 if __name__ == "__main__":

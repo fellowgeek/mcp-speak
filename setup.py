@@ -9,6 +9,7 @@ from pathlib import Path
 
 PROJECT_DIR = Path(__file__).parent.resolve()
 PERSONAS_DIR = PROJECT_DIR / "personas"
+VOICES_DIR = PROJECT_DIR / "voices"
 
 PERSONA_MAP = {
     "1": ("Sarcastic Senior", "sarcastic_senior.md"),
@@ -84,6 +85,8 @@ def update_project_config(engine: str, persona_key: str, device: str = None):
         data["device"] = device
     elif "device" not in data:
         data["device"] = "auto"
+    if "voices_dir" not in data:
+        data["voices_dir"] = "voices"
     if "fallback_to_say" not in data:
         data["fallback_to_say"] = True
 
@@ -277,6 +280,9 @@ def main():
             ENGINE_MAP, "\nSelect Text-to-Speech Engine:", default_key="1"
         )
 
+    # Ensure voices directory exists
+    VOICES_DIR.mkdir(parents=True, exist_ok=True)
+
     # 3. Determine Persona
     persona_key_name = "agent_smith"
     if args.persona:
@@ -292,7 +298,18 @@ def main():
         persona_label = "Agent Smith"
         persona_key_name = "agent_smith"
     else:
-        label, filename = get_interactive_choice(PERSONA_MAP, "\nSelect agent persona:", default_key="1")
+        # Dynamically decorate options if matching reference audio exists in voices/
+        decorated_persona_map = {}
+        for k, (lbl, fname) in PERSONA_MAP.items():
+            stem = Path(fname).stem
+            wav_path = VOICES_DIR / f"{stem}.wav"
+            pt_path = VOICES_DIR / f"{stem}.pt"
+            if pt_path.exists() or wav_path.exists():
+                decorated_persona_map[k] = (f"{lbl} [Cloned Voice Ready 🎙️]", fname)
+            else:
+                decorated_persona_map[k] = (lbl, fname)
+
+        label, filename = get_interactive_choice(decorated_persona_map, "\nSelect agent persona:", default_key="1")
         persona_file = PERSONAS_DIR / filename
         persona_label = label
         persona_key_name = persona_file.stem
