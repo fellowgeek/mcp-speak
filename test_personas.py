@@ -4,11 +4,18 @@ Interactive Persona Voice Audition Script for mcp-speak.
 Allows testing and previewing different persona voices using OmniVoice or macOS 'say'.
 """
 
+import os
 import sys
 import argparse
 import tempfile
 import subprocess
 from pathlib import Path
+
+# Auto-re-execute using .venv python if available and not already inside a virtualenv
+PROJECT_DIR = Path(__file__).parent.resolve()
+VENV_PYTHON = PROJECT_DIR / ".venv" / "bin" / "python"
+if sys.prefix == sys.base_prefix and VENV_PYTHON.exists():
+    os.execv(str(VENV_PYTHON), [str(VENV_PYTHON)] + sys.argv)
 
 from speak_server import load_config, OmniVoiceEngine, SayEngine
 

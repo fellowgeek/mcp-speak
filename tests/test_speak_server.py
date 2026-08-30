@@ -1,10 +1,21 @@
+import os
+import sys
+from pathlib import Path
+
+# Auto-re-execute using .venv python if available and not already inside a virtualenv
+PROJECT_DIR = Path(__file__).parent.parent.resolve()
+VENV_PYTHON = PROJECT_DIR / ".venv" / "bin" / "python"
+if sys.prefix == sys.base_prefix and VENV_PYTHON.exists():
+    os.execv(str(VENV_PYTHON), [str(VENV_PYTHON)] + sys.argv)
+
+if str(PROJECT_DIR) not in sys.path:
+    sys.path.insert(0, str(PROJECT_DIR))
+
 import unittest
 import time
 import json
-import os
 import tempfile
 import threading
-from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 import speak_server

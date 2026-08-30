@@ -28,14 +28,92 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
    git clone https://github.com/fellowgeek/mcp-speak.git
    cd mcp-speak
    ```
-2. Run the interactive setup wizard (automatically sets up personas & permissions for `run.sh`):
+2. Run the interactive setup wizard (automatically configures MCP settings, sets permissions, and creates instruction files):
    ```bash
    python3 setup.py
    ```
 
-## Configuration
+### Non-Interactive Setup (CLI Options)
 
-Running **`python3 setup.py`** automatically configures the MCP server in your selected tool's configuration file!
+You can also run `setup.py` with command-line flags for automated provisioning:
+
+```bash
+# Example: Configure all tools with OmniVoice on MPS using the Neutral Mainframe persona
+python3 setup.py --non-interactive --tool 8 --engine omnivoice --device mps --persona neutral_mainframe --name "Mr. Reed"
+
+# Example: Configure Cursor locally with macOS say and Sarcastic Senior
+python3 setup.py --tool 4 --engine say --persona sarcastic_senior --local
+```
+
+| Flag | Options / Format | Description |
+|---|---|---|
+| `--tool` | `1`-`8` | `1`: Antigravity, `2`: Claude Desktop, `3`: Claude CLI, `4`: Cursor, `5`: Windsurf, `6`: Codex Desktop, `7`: Codex CLI, `8`: All |
+| `--engine` | `omnivoice`, `say` | Select text-to-speech engine |
+| `--device` | `auto`, `mps`, `cuda`, `cpu` | Compute device for OmniVoice neural synthesis |
+| `--persona` | Persona key (e.g. `neutral_mainframe`) | Persona prompt name |
+| `--name` | String (e.g. `"Mr. Reed"`) | User name for personalized agent address |
+| `--target` | File path | Custom target agent instruction file (e.g. `AGENTS.md`) |
+| `--global` / `--local` | Flags | Write instructions globally to user profile (default) or locally in workspace |
+| `--no-config-edit` | Flag | Skip modifying tool JSON / TOML configuration files |
+| `--non-interactive` | Flag | Run automatically with defaults or provided flags |
+
+---
+
+## Persona Voice Audition (`test_personas.py`)
+
+Preview and compare persona vocal identities directly in the terminal before configuring your AI agent:
+
+```bash
+# Launch interactive terminal audition menu
+python3 test_personas.py
+
+# Audition a specific persona
+python3 test_personas.py --persona agent_smith
+
+# Audition all personas sequentially
+python3 test_personas.py --all
+
+# Test with custom speech text and specific engine
+python3 test_personas.py --persona neutral_mainframe --engine omnivoice --text "System operational. All parameters within nominal thresholds."
+```
+
+---
+
+## MCP Tool Interface Reference
+
+The MCP Speak server exposes two tools via FastMCP:
+
+| Tool | Mode | Description |
+|---|---|---|
+| `speak(message: str)` | **Blocking** | Synthesizes and speaks the message aloud, waiting for audio playback to finish completely before returning. |
+| `speak_non_blocking(message: str)` | **Non-Blocking** | Queues the message into a strict sequential FIFO queue and returns immediately. Subsequent calls play in order without talking over each other. |
+
+---
+
+## Configuration & Environment Variables
+
+The server loads configuration from `config.json` at startup:
+
+```json
+{
+  "engine": "omnivoice",
+  "persona": "neutral_mainframe",
+  "device": "auto",
+  "fallback_to_say": true
+}
+```
+
+### Environment Variable Overrides
+
+Runtime parameters can be overridden via environment variables without modifying `config.json`:
+
+* `MCP_SPEAK_ENGINE`: Set to `"omnivoice"` or `"say"`.
+* `MCP_SPEAK_PERSONA`: Set to any persona key (e.g. `"agent_smith"`, `"neutral_mainframe"`).
+* `MCP_SPEAK_DEVICE`: Set to `"auto"`, `"mps"`, `"cuda"`, or `"cpu"`.
+
+---
+
+## Client Integration
 
 ### Manual Configuration (Optional)
 
@@ -265,3 +343,15 @@ For the best experience, you should configure your Mac's text-to-speech settings
 7.  Set it as your default **System Voice**.
 
 *Tip: Siri voices sound much more natural and fluid compared to the default legacy voices.*
+
+## Testing & Validation
+
+Run the automated test suite to verify configuration loading, engine fallbacks, single-pass synthesis, and sequential queue behavior:
+
+```bash
+# Run unit tests
+python3 tests/test_speak_server.py
+
+# Or run via unittest discovery in the virtual environment
+.venv/bin/python -m unittest discover tests
+```
