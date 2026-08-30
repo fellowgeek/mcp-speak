@@ -33,27 +33,62 @@ SAMPLE_PHRASES = {
 }
 
 
-def play_persona_sample(persona_key: str, engine_type: str, custom_text: str = None):
+def get_persona_voice_mode(persona_key: str, config: dict) -> str:
+    """Return a descriptive string of how this persona will be synthesized (Clone vs Design)."""
+    voices_dir = Path(config.get("voices_dir", "voices"))
+    if not voices_dir.is_absolute():
+        voices_dir = PROJECT_DIR / voices_dir
+
+    wav_file = voices_dir / f"{persona_key}.wav"
+    pt_file = voices_dir / f"{persona_key}.pt"
+    txt_file = voices_dir / f"{persona_key}.txt"
+
+    if pt_file.exists():
+        return f"Cached Clone ({pt_file.name})"
+    elif wav_file.exists():
+        has_txt = " + transcript" if txt_file.exists() else " (auto ASR)"
+        return f"Cloned Audio ({wav_file.name}{has_txt})"
+    else:
+        voice_designs = config.get("voice_designs", {})
+        persona_cfg = voice_designs.get(persona_key, {})
+        instruct = persona_cfg.get("instruct", "default voice")
+        return f"Voice Design ({instruct})"
+
+
+def play_persona_sample(
+    persona_key: str,
+    engine_type: str,
+    custom_text: str = None,
+    custom_voice_file: str = None,
+):
     config = load_config()
     config["engine"] = engine_type
     config["persona"] = persona_key
 
-    voice_designs = config.get("voice_designs", {})
-    persona_cfg = voice_designs.get(persona_key, {})
-    instruct = persona_cfg.get("instruct", "default voice")
-
     text = custom_text if custom_text else SAMPLE_PHRASES.get(persona_key, "Hello! This is a voice test.")
+
+    if custom_voice_file:
+        voice_mode = f"Custom Audio ({custom_voice_file})"
+    elif engine_type == "omnivoice":
+        voice_mode = get_persona_voice_mode(persona_key, config)
+    else:
+        voice_mode = "macOS native say"
 
     print("\n" + "=" * 60)
     print(f"🎙️  Persona:  {persona_key.upper()}")
     print(f"⚙️  Engine:   {engine_type.upper()}")
-    print(f"🎨 Voice:    {instruct}")
+    print(f"🎨 Voice:    {voice_mode}")
     print(f"💬 Message:  \"{text}\"")
     print("=" * 60)
     print("Generating and playing speech...")
 
     if engine_type == "omnivoice":
         engine = OmniVoiceEngine(config)
+        if custom_voice_file:
+            # Dynamically override clone prompt for custom voice file audition
+            model = engine._get_model()
+            prompt = model.create_voice_clone_prompt(ref_audio=custom_voice_file)
+            engine._voice_clone_prompts[persona_key] = prompt
     else:
         engine = SayEngine()
 
@@ -63,7 +98,6 @@ def play_persona_sample(persona_key: str, engine_type: str, custom_text: str = N
 
 def interactive_menu(engine_type: str):
     config = load_config()
-    voice_designs = config.get("voice_designs", {})
     persona_keys = list(SAMPLE_PHRASES.keys())
 
     while True:
@@ -73,9 +107,9 @@ def interactive_menu(engine_type: str):
         print(f"Current Engine: {engine_type.upper()}\n")
 
         for idx, key in enumerate(persona_keys, start=1):
-            cfg = voice_designs.get(key, {})
-            instruct = cfg.get("instruct", "default voice")
-            print(f"  [{idx}] {key.replace('_', ' ').title():<22} ({instruct})")
+            mode_desc = get_persona_voice_mode(key, config)
+            clone_badge = " [CLONED]" if "Clone" in mode_desc else ""
+            print(f"  [{idx}] {key.replace('_', ' ').title():<20}{clone_badge} ({mode_desc})")
 
         print(f"  [A] Play All Personas Sequentially")
         print(f"  [T] Toggle Engine (OmniVoice / Say)")
@@ -105,17 +139,19 @@ def main():
     parser.add_argument("--persona", choices=list(SAMPLE_PHRASES.keys()), help="Directly test a specific persona")
     parser.add_argument("--all", action="store_true", help="Play samples for all personas sequentially")
     parser.add_argument("--engine", choices=["omnivoice", "say"], default="omnivoice", help="TTS Engine to test with")
+    parser.add_argument("--voice-file", help="Path to custom reference WAV audio file for voice cloning")
     parser.add_argument("--text", help="Custom text to speak")
     args = parser.parse_args()
 
     if args.all:
         for key in SAMPLE_PHRASES.keys():
-            play_persona_sample(key, args.engine, args.text)
+            play_persona_sample(key, args.engine, args.text, args.voice_file)
     elif args.persona:
-        play_persona_sample(args.persona, args.engine, args.text)
+        play_persona_sample(args.persona, args.engine, args.text, args.voice_file)
     else:
         interactive_menu(args.engine)
 
 
 if __name__ == "__main__":
     main()
+

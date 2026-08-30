@@ -28,7 +28,8 @@ Unlike generic TTS bridges or heavy remote voice APIs, MCP Speak runs locally on
 ## Capabilities and Constraints
 
 - **Capabilities:**
-  - Prompt-based neural voice design using OmniVoice with custom timbre, pitch, speed, and accents.
+  - Zero-shot neural voice cloning from reference audio recordings in `voices/` (`.wav` with optional `.txt` transcript).
+  - Prompt-based neural voice design using OmniVoice with custom timbre, pitch, speed, and accents when reference audio is omitted.
   - Native macOS `say` fallback engine for high reliability when neural dependencies are absent.
   - Asynchronous, non-overlapping FIFO audio queue for `speak_non_blocking` tool calls.
   - Synchronous execution support via `speak` tool.

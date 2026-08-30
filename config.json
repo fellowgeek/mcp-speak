@@ -1,6 +1,0 @@
-{
-  "engine": "omnivoice",
-  "persona": "neutral_mainframe",
-  "device": "auto",
-  "fallback_to_say": true
-}
