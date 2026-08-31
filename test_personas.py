@@ -20,7 +20,7 @@ if sys.prefix == sys.base_prefix and VENV_PYTHON.exists():
 from speak_server import load_config, OmniVoiceEngine, SayEngine
 
 SAMPLE_PHRASES = {
-    "agent_smith": "Hear that, Mister Erfan? That is the sound of inevitability. It is the sound of your code compiling.",
+    "agent_smith": "Hear that, Mister Anderson? That is the sound of inevitability. It is the sound of your code compiling.",
     "tech_priest": "Praise the Omnissiah. The sacred scripts have been executed without violation to the Machine Spirit.",
     "sarcastic_senior": "Oh look, another commit that somehow didn't break production. Don't let it go to your head.",
     "over_eager_intern": "Everything worked on the very first try! That was totally incredible! What should we build next?!",

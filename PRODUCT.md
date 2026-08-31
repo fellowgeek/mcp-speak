@@ -47,11 +47,11 @@ Unlike generic TTS bridges or heavy remote voice APIs, MCP Speak runs locally on
 
 ## Evidence on Hand
 
-- Core MCP server implementation in [`speak_server.py`](file:///Users/erfan/Projects/mcp-speak/speak_server.py).
-- Web showcase and interactive generator in [`index.html`](file:///Users/erfan/Projects/mcp-speak/index.html).
-- Persona definitions and guidelines in [`personas/`](file:///Users/erfan/Projects/mcp-speak/personas/).
-- Interactive setup script in [`setup.py`](file:///Users/erfan/Projects/mcp-speak/setup.py).
-- Shell bootstrapper in [`run.sh`](file:///Users/erfan/Projects/mcp-speak/run.sh).
+- Core MCP server implementation in [`speak_server.py`](speak_server.py).
+- Web showcase and interactive generator in [`index.html`](index.html).
+- Persona definitions and guidelines in [`personas/`](personas/).
+- Interactive setup script in [`setup.py`](setup.py).
+- Shell bootstrapper in [`run.sh`](run.sh).
 
 ## Product Principles
 
