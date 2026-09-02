@@ -11,7 +11,7 @@ This document provides the complete catalog of modular agent personas, voice des
 
 ## Table of Contents
 
-- [Overview & Architecture](#-overview--architecture)
+- [Overview & Architecture](#overview--architecture)
 - [1. Base Guidelines (Required)](#1-base-guidelines-required)
 - [2. Persona Gallery (Quick Overview)](#2-persona-gallery-quick-overview)
 - [3. Persona Catalog (Detailed System Prompts)](#3-persona-catalog-detailed-system-prompts)

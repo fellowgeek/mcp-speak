@@ -249,17 +249,27 @@ Running **`python3 setup.py`** automatically generates and updates your agent in
 
 ## Optimizing Voice Quality
 
-For the best experience, you should configure your Mac's text-to-speech settings to use a high-quality "Siri" or "Enhanced" voice.
+### 1. Neural Voice Synthesis with OmniVoice (Primary Engine)
 
-1.  Open **System Settings**.
-2.  Go to **Accessibility** > **Spoken Content**.
-3.  Click on the **System Voice** dropdown.
-4.  Select **"Manage Voices..."**.
-5.  Look for **"Siri"** voices (e.g., Siri Voice 1, 2, 3, 4) or voices marked as **"Premium"** or **"Enhanced"**.
-6.  Download and select one of these high-quality voices.
-7.  Set it as your default **System Voice**.
+OmniVoice delivers high-quality, expressive neural speech out of the box using style prompts tailored to each persona. To achieve the highest vocal fidelity:
 
-*Tip: Siri voices sound much more natural and fluid compared to the default legacy voices.*
+- **Neural Voice Cloning:** Place a 3 to 10 second clean `.wav` audio sample in the `voices/` directory matching the persona key (e.g. `voices/sarcastic_senior.wav`). OmniVoice clones the vocal timbre, tone, and inflection directly from the audio file without additional training.
+- **Fast Startup with Transcripts:** Include an optional matching transcript text file (e.g. `voices/sarcastic_senior.txt`) containing the exact spoken text. This enables instant tokenization and skips loading the Whisper ASR model on startup.
+- **Audio Quality Guidelines:** Use clean recordings without background noise, music, or heavy reverb. Standard WAV format sampled at 24kHz or higher is recommended.
+- **Voice Design Fallback:** When no audio sample is present in `voices/`, OmniVoice uses natural language instructions (pitch, accent, speed, and character traits) configured in `config.json`.
+
+### 2. macOS System Voice Configuration (Fallback Engine)
+
+When using native macOS `say` (either as a fallback or in lightweight mode), voice quality depends on the active system voice. Configuring a modern Siri or Enhanced voice significantly improves realism and fluidity:
+
+1. Open **System Settings** on your Mac.
+2. Navigate to **Accessibility** > **Spoken Content**.
+3. Click the **System Voice** dropdown menu.
+4. Select **Manage Voices...**.
+5. Locate and download high-quality **Siri** voices (e.g., Siri Voice 1, 2, 3, 4) or voices marked as **Enhanced** / **Premium** (e.g., Ava, Evan, Zoe).
+6. Set the downloaded voice as your default **System Voice**.
+
+*Note: Siri and Enhanced voices provide significantly more natural cadence, phrasing, and pronunciation compared to legacy system voices.*
 
 ## Testing & Validation
 
