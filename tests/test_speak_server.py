@@ -86,6 +86,7 @@ class TestSpeakServer(unittest.TestCase):
             created_temp_files.append(path)
             return path
 
+        engine._resolve_voice_clone_prompt = MagicMock(return_value=None)
         engine._synthesize_to_file = MagicMock(side_effect=mock_synthesize)
 
         message = "This is sentence one. This is sentence two. Everything is synthesized as one continuous audio pass."
