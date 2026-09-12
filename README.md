@@ -20,6 +20,7 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
 - **Automatic Fallback:** Seamlessly falls back to native macOS `say` if neural models cannot be loaded.
 - **Auto-Provisioning Virtual Environment:** Uses `run.sh` to automatically create a local `.venv` (Python 3.12) and install dependencies.
 - **Blocking & Non-Blocking Support:** Choose between waiting for speech to finish (`speak`) or continuing immediately (`speak_non_blocking`).
+- **Meeting Awareness & Audio Suppression:** Automatically checks `~/.in-meeting`; if set to `active`, speech playback is suppressed to prevent interrupting calls. Normal playback resumes when `inactive` or absent. This feature works perfectly with the ["In Meeting" app](https://github.com/fellowgeek/in-meeting).
 
 ## Prerequisites
 
@@ -142,6 +143,16 @@ Runtime parameters can be overridden via environment variables without modifying
 * `MCP_SPEAK_PERSONA`: Set to any persona key (e.g. `"agent_smith"`, `"neutral_mainframe"`).
 * `MCP_SPEAK_DEVICE`: Set to `"auto"`, `"mps"`, `"cuda"`, or `"cpu"`.
 * `MCP_SPEAK_VOICES_DIR`: Set to a custom directory path containing reference audio files.
+* `MCP_SPEAK_MEETING_FILE`: Path to a custom meeting status file (defaults to `~/.in-meeting`).
+
+### Meeting Detection & Audio Suppression
+
+MCP Speak includes built-in meeting awareness to avoid speaking over your meetings:
+- Before playing speech audio via `say` or `omnivoice`, the server checks `~/.in-meeting`.
+- If the file contains `active` (case-insensitive), all audio playback is immediately suppressed.
+- If the file contains `inactive`, is empty, or does not exist, audio plays normally.
+
+This feature works seamlessly with the [**In Meeting** app](https://github.com/fellowgeek/in-meeting) to automatically detect active camera and microphone use and keep your audio muted during calls.
 
 ---
 
@@ -236,6 +247,8 @@ AI agents (Google Antigravity, Claude Code, Claude Desktop, Cursor, Windsurf, Co
 | <img src="images/nature_narrator.webp" width="48" alt="Nature Narrator"/> | [**The Nature Narrator**](PERSONAS.md#persona-h-the-nature-documentary-narrator-david-attenborough-inspired) | `nature_narrator` | *Observing the developer in their natural habitat with awe.* |
 | <img src="images/head_chef.webp" width="48" alt="Fiery Head Chef"/> | [**The Fiery Head Chef**](PERSONAS.md#persona-i-the-fiery-head-chef-gordon-ramsay-inspired) | `head_chef` | *Demands culinary perfection—no raw spaghetti code!* |
 | <img src="images/neutral_mainframe.webp" width="48" alt="Neutral Mainframe"/> | [**The Neutral Mainframe**](PERSONAS.md#persona-j-the-neutral-mainframe-cold--analytical) | `neutral_mainframe` | *Cold, calculating, emotionless, and 100% objective.* |
+| <img src="images/grizzled_cowboy.webp" width="48" alt="Grizzled Cowboy"/> | [**Grizzled Cowboy**](PERSONAS.md#persona-k-grizzled-cowboy-gritty--laconic) | `grizzled_cowboy` | *Weathered, pragmatic, blunt, and grounded in trail-worn grit.* |
+| <img src="images/not_quite_meeseeks.webp" width="48" alt="Not-Quite-Meeseeks"/> | [**Not-Quite-Meeseeks**](PERSONAS.md#persona-l-not-quite-meeseeks-manic-eager--desperate-to-cease-existing) | `not_quite_meeseeks` | *Hyper-enthusiastic, obliging, shrill, and desperate to cease existing.* |
 
 ### How Prompts Are Built
 

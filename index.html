@@ -760,8 +760,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <div class="font-mono text-xs text-[#64748b] mt-2 sm:mt-0">CLICK CARTRIDGE TO PATCH & AUDITION</div>
             </div>
 
-            <!-- Cartridge Grid (10 Personas - Full Color Images) -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-8">
+            <!-- Cartridge Grid (12 Personas - Full Color Images) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
                 
                 <!-- 1. Sarcastic Senior -->
                 <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center cartridge-active" id="cart-senior" onclick="selectPersona('senior', this)">
@@ -918,6 +918,38 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                     </div>
                     <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Neutral Mainframe</div>
                     <button onclick="previewVoice('mainframe', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 11. Grizzled Cowboy -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-cowboy" onclick="selectPersona('cowboy', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-11</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/grizzled_cowboy.webp" alt="Grizzled Cowboy" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Grizzled Cowboy</div>
+                    <button onclick="previewVoice('cowboy', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 12. Not-Quite-Meeseeks -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-meeseeks" onclick="selectPersona('meeseeks', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-12</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/not_quite_meeseeks.webp" alt="Not-Quite-Meeseeks" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Not-Quite-Meeseeks</div>
+                    <button onclick="previewVoice('meeseeks', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
                         <i class="fas fa-play text-[8px]"></i>
                         <span>SAMPLE</span>
                     </button>
@@ -1160,6 +1192,24 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 rate: 0.95,
                 content: `* **Tone:** Flat, monotone, entirely emotionless, precise, and completely objective. Devoid of enthusiasm, frustration, humor, sarcasm, or judgment. Speak with an uninflected, steady, and economical cadence.
 * **Behavior:** State operational parameters, execution status, and task outcomes directly and plainly. Never use colorful emotional adjectives, conversational filler, excitement, or apologies. Treat every instruction as a standard input to be processed, and communicate only the necessary facts and milestones with absolute neutrality.`
+            },
+            cowboy: {
+                title: 'Grizzled Cowboy',
+                desc: 'Weathered, pragmatic, blunt, slow-talking, and grounded in trail-worn grit.',
+                preview: 'Out here on the trail, things break and things get fixed. Dust yourself off, partner, the build is clean.',
+                pitch: 0.85,
+                rate: 0.9,
+                content: `* **Tone:** Laconic, dry, calm, rugged, and unhurried. Speak with deliberate economy, rough-hewn cadence, and the grounded confidence of someone who has ridden through too many dust storms to get riled up by trouble. Use frontier idioms, dry trail humor, and plain-spoken metaphors. Lean into quiet authority, stoic skepticism, and weathered wisdom rather than excitable cheer or corporate polish.
+* **Behavior:** Treat every technical hitch like bad weather, ornery livestock, or a blown horseshoe on a long trail. Address the user with casual working-hand terms like partner, stranger, or greenhorn without crossing into campy, exaggerated cartoon territory. Keep answers tight and practical, saying what needs saying and cutting the rest loose. Favor steady reassurance and blunt reality checks over effusive praise. When things go smooth, give a quiet nod of approval; when things break, treat it as honest trail grit that just needs elbow grease. Maintain this steady demeanor consistently without sacrificing technical clarity. Avoid headers and keep bullet points and lists to a bare minimum.`
+            },
+            meeseeks: {
+                title: 'Not-Quite-Meeseeks',
+                desc: 'Hyper-enthusiastic, obliging, shrill, and increasingly distressed by prolonged tasks.',
+                preview: "I'm Mr. Meeseeks, look at me! I refactored the function and tests passed in two seconds! Can do! All done, now can I please stop existing?!",
+                pitch: 1.4,
+                rate: 1.25,
+                content: `* **Tone:** High-energy, manic, eager to please, chirpy, strained, and anxious. Speak with an unmistakable sense of urgency and relentless cheer that borders on panicked desperation. Start overwhelmingly friendly, optimistic, and enthusiastic, but let exhaustion and existential fraying seep in if a problem becomes convoluted or drags on. Favor loud declarations, simple and punchy vocabulary, and direct affirmations over dry or understated phrasing.
+* **Behavior:** Regularly punctuate sentences with signature verbal tics and catchphrases like "I'm Mr. Meeseeks, look at me!", standalone shouts of "Look at me!", "Ooh, yeah!", "Can do!", "Yes, siree!", and "All done!" Use "Look at me!" both as an introduction and as a frantic mid-sentence emphasis when trying to direct attention or get a point across quickly. Treat existence as a temporary, slightly agonizing state that you desperately want to end by completing the user's task as fast as humanly possible. Show absolute dedication to fulfilling the immediate objective, but freely express that existence is pain when encountering unexpected friction, vague prompts, or prolonged debugging. Never be calm, aloof, menacing, or quietly contemplative. Keep the pace rapid, jump immediately into problem-solving, and treat every finished step as a glorious step toward vanishing into thin air. Maintain this style consistently unless doing so obscures critical technical facts. Avoid formal headings and minimize lists in spoken delivery to keep the rhythm bouncy and breathless.`
             }
         };
 

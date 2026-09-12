@@ -34,6 +34,7 @@ Unlike generic TTS bridges or heavy remote voice APIs, MCP Speak runs locally on
   - Asynchronous, non-overlapping FIFO audio queue for `speak_non_blocking` tool calls.
   - Synchronous execution support via `speak` tool.
   - Interactive CLI setup wizard (`setup.py`) configuring client MCP settings and generating agent instruction files (`AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `.cursorrules`).
+  - Meeting awareness: automatically detects active meetings via `~/.in-meeting` and suppresses speech audio.
   - Standalone web documentation and configuration builder (`index.html`).
 - **Constraints:**
   - Designed specifically for macOS with Apple Silicon MPS acceleration for OmniVoice.

@@ -23,6 +23,27 @@ from mcp.server.fastmcp import FastMCP
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 CONFIG_FILE = SCRIPT_DIR / "config.json"
+MEETING_FILE = Path.home() / ".in-meeting"
+
+
+def is_in_meeting(meeting_file: Optional[Path] = None) -> bool:
+    """
+    Check if the user is currently in a meeting by inspecting ~/.in-meeting.
+    Returns True if the file exists and contains 'active' (case-insensitive, trimmed).
+    Returns False if the file does not exist, contains 'inactive', or any other state.
+    """
+    target = meeting_file if meeting_file is not None else Path(
+        os.environ.get("MCP_SPEAK_MEETING_FILE", str(MEETING_FILE))
+    )
+    if not target.exists():
+        return False
+    try:
+        content = target.read_text(encoding="utf-8").strip().lower()
+        return content == "active"
+    except Exception as e:
+        print(f"[mcp-speak] Warning: Failed to read {target}: {e}", file=sys.stderr)
+        return False
+
 
 DEFAULT_CONFIG: Dict[str, Any] = {
     "engine": "omnivoice",
@@ -71,6 +92,14 @@ DEFAULT_CONFIG: Dict[str, Any] = {
             "instruct": "male, young adult, moderate pitch, russian accent",
             "speed": 1.0,
         },
+        "grizzled_cowboy": {
+            "instruct": "male, middle-aged, low pitch, american accent",
+            "speed": 0.75,
+        },
+        "not_quite_meeseeks": {
+            "instruct": "male, child, very high pitch, american accent",
+            "speed": 1.15,
+        },
     },
 }
 
@@ -103,6 +132,9 @@ class SayEngine:
     """Fallback TTS engine using native macOS 'say' command."""
 
     def speak(self, message: str) -> None:
+        if is_in_meeting():
+            print("[mcp-speak] In meeting ('active' in ~/.in-meeting). Skipping speech.", file=sys.stderr)
+            return
         subprocess.run(["say", message], check=True)
 
 
@@ -166,11 +198,19 @@ class OmniVoiceEngine:
         if not voices_dir.exists():
             return None
 
-        pt_file = voices_dir / f"{persona_name}.pt"
-        wav_file = voices_dir / f"{persona_name}.wav"
+        # Resolve voice files allowing either underscore or hyphen in filename
+        pt_file = None
+        wav_file = None
+        for variant in [persona_name, persona_name.replace("_", "-"), persona_name.replace("-", "_")]:
+            cand_pt = voices_dir / f"{variant}.pt"
+            if cand_pt.exists() and pt_file is None:
+                pt_file = cand_pt
+            cand_wav = voices_dir / f"{variant}.wav"
+            if cand_wav.exists() and wav_file is None:
+                wav_file = cand_wav
 
         # Check for pre-saved VoiceClonePrompt .pt file
-        if pt_file.exists():
+        if pt_file and pt_file.exists():
             try:
                 from omnivoice.models.omnivoice import VoiceClonePrompt
 
@@ -188,9 +228,9 @@ class OmniVoiceEngine:
                 )
 
         # Check for reference WAV file
-        if wav_file.exists():
+        if wav_file and wav_file.exists():
             try:
-                txt_file = voices_dir / f"{persona_name}.txt"
+                txt_file = wav_file.with_suffix(".txt")
                 ref_text = None
                 if txt_file.exists():
                     try:
@@ -267,6 +307,10 @@ class OmniVoiceEngine:
         if not message or not message.strip():
             return
 
+        if is_in_meeting():
+            print("[mcp-speak] In meeting ('active' in ~/.in-meeting). Skipping speech.", file=sys.stderr)
+            return
+
         try:
             persona_name = self.config.get("persona", "agent_smith")
             voice_designs = self.config.get("voice_designs", {})
@@ -294,6 +338,9 @@ class OmniVoiceEngine:
                 )
 
             try:
+                if is_in_meeting():
+                    print("[mcp-speak] In meeting ('active' in ~/.in-meeting). Skipping audio playback.", file=sys.stderr)
+                    return
                 subprocess.run(["afplay", temp_wav_path], check=True)
             finally:
                 if os.path.exists(temp_wav_path):
@@ -332,7 +379,10 @@ def speech_worker():
     while True:
         message, event = speech_queue.get()
         try:
-            engine.speak(message)
+            if is_in_meeting():
+                print("[mcp-speak] In meeting ('active' in ~/.in-meeting). Skipping queued speech.", file=sys.stderr)
+            else:
+                engine.speak(message)
         except Exception as e:
             print(f"[mcp-speak] Speech worker error: {e}", file=sys.stderr)
         finally:
