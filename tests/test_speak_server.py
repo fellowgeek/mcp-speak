@@ -26,6 +26,7 @@ from speak_server import (
     speak,
     speak_non_blocking,
     speech_queue,
+    is_in_meeting,
 )
 
 
@@ -271,6 +272,103 @@ class TestSpeakServer(unittest.TestCase):
                 instruct="male, sarcastic, low pitch",
                 speed=1.0,
             )
+
+    def test_is_in_meeting_absent_file(self):
+        """Verify is_in_meeting returns False when meeting file does not exist."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            missing_file = Path(temp_dir) / ".in-meeting"
+            self.assertFalse(is_in_meeting(missing_file))
+
+    def test_is_in_meeting_active(self):
+        """Verify is_in_meeting returns True for 'active' variants (case-insensitive, trimmed)."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            meeting_file = Path(temp_dir) / ".in-meeting"
+            for val in ["active", "active\n", "ACTIVE", "Active\r\n", "  active  "]:
+                meeting_file.write_text(val, encoding="utf-8")
+                self.assertTrue(is_in_meeting(meeting_file), f"Failed for value: {repr(val)}")
+
+    def test_is_in_meeting_inactive_and_other(self):
+        """Verify is_in_meeting returns False for 'inactive', empty, or other states."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            meeting_file = Path(temp_dir) / ".in-meeting"
+            for val in ["inactive", "inactive\n", "INACTIVE", "busy", "away", "", "   "]:
+                meeting_file.write_text(val, encoding="utf-8")
+                self.assertFalse(is_in_meeting(meeting_file), f"Failed for value: {repr(val)}")
+
+    def test_is_in_meeting_env_var_override(self):
+        """Verify is_in_meeting respects MCP_SPEAK_MEETING_FILE environment variable."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            meeting_file = Path(temp_dir) / "custom-meeting-state"
+            meeting_file.write_text("active\n", encoding="utf-8")
+            with patch.dict("os.environ", {"MCP_SPEAK_MEETING_FILE": str(meeting_file)}):
+                self.assertTrue(is_in_meeting())
+
+    @patch("speak_server.is_in_meeting", return_value=True)
+    @patch("subprocess.run")
+    def test_say_engine_suppresses_audio_in_meeting(self, mock_run, mock_meeting):
+        """Verify SayEngine does not invoke 'say' when user is in a meeting."""
+        engine = SayEngine()
+        engine.speak("Hello world during meeting")
+        mock_run.assert_not_called()
+
+    @patch("speak_server.is_in_meeting", return_value=False)
+    @patch("subprocess.run")
+    def test_say_engine_plays_audio_when_not_in_meeting(self, mock_run, mock_meeting):
+        """Verify SayEngine invokes 'say' when user is not in a meeting."""
+        engine = SayEngine()
+        engine.speak("Hello world")
+        mock_run.assert_called_once_with(["say", "Hello world"], check=True)
+
+    @patch("speak_server.is_in_meeting", return_value=True)
+    @patch("subprocess.run")
+    def test_omnivoice_suppresses_audio_in_meeting(self, mock_run, mock_meeting):
+        """Verify OmniVoiceEngine does not synthesize or play audio when user is in a meeting."""
+        config = {
+            "engine": "omnivoice",
+            "persona": "agent_smith",
+            "fallback_to_say": False,
+        }
+        engine = OmniVoiceEngine(config)
+        engine._synthesize_to_file = MagicMock()
+
+        engine.speak("Should not play during meeting")
+        engine._synthesize_to_file.assert_not_called()
+        mock_run.assert_not_called()
+
+    @patch("subprocess.run")
+    def test_omnivoice_suppresses_playback_if_meeting_starts_during_synthesis(self, mock_run):
+        """Verify OmniVoiceEngine suppresses afplay and cleans temp file if meeting activates during synthesis."""
+        config = {
+            "engine": "omnivoice",
+            "persona": "agent_smith",
+            "fallback_to_say": False,
+        }
+        engine = OmniVoiceEngine(config)
+
+        fd, temp_path = tempfile.mkstemp(suffix=".wav")
+        os.close(fd)
+        self.assertTrue(os.path.exists(temp_path))
+
+        engine._resolve_voice_clone_prompt = MagicMock(return_value=None)
+        engine._synthesize_to_file = MagicMock(return_value=temp_path)
+
+        # First call False (start of speak), second call True (before afplay)
+        with patch("speak_server.is_in_meeting", side_effect=[False, True]):
+            engine.speak("Meeting started mid-synthesis")
+
+        mock_run.assert_not_called()
+        # Verify temp audio file was cleaned up in finally block
+        self.assertFalse(os.path.exists(temp_path))
+
+    def test_speech_worker_skips_when_in_meeting(self):
+        """Verify background speech worker skips calling engine.speak if in a meeting."""
+        mock_engine = MagicMock()
+        with patch("speak_server.engine", mock_engine), patch("speak_server.is_in_meeting", return_value=True):
+            event = threading.Event()
+            speech_queue.put(("Test meeting message", event))
+            event.wait(timeout=2.0)
+            self.assertTrue(event.is_set())
+            mock_engine.speak.assert_not_called()
 
 
 if __name__ == "__main__":

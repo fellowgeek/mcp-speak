@@ -20,6 +20,7 @@ This is a Model Context Protocol (MCP) server that provides text-to-speech capab
 - **Automatic Fallback:** Seamlessly falls back to native macOS `say` if neural models cannot be loaded.
 - **Auto-Provisioning Virtual Environment:** Uses `run.sh` to automatically create a local `.venv` (Python 3.12) and install dependencies.
 - **Blocking & Non-Blocking Support:** Choose between waiting for speech to finish (`speak`) or continuing immediately (`speak_non_blocking`).
+- **Meeting Awareness & Audio Suppression:** Automatically checks `~/.in-meeting`; if set to `active`, speech playback is suppressed to prevent interrupting calls. Normal playback resumes when `inactive` or absent. This feature works perfectly with the ["In Meeting" app](https://github.com/fellowgeek/in-meeting).
 
 ## Prerequisites
 
@@ -142,6 +143,16 @@ Runtime parameters can be overridden via environment variables without modifying
 * `MCP_SPEAK_PERSONA`: Set to any persona key (e.g. `"agent_smith"`, `"neutral_mainframe"`).
 * `MCP_SPEAK_DEVICE`: Set to `"auto"`, `"mps"`, `"cuda"`, or `"cpu"`.
 * `MCP_SPEAK_VOICES_DIR`: Set to a custom directory path containing reference audio files.
+* `MCP_SPEAK_MEETING_FILE`: Path to a custom meeting status file (defaults to `~/.in-meeting`).
+
+### Meeting Detection & Audio Suppression
+
+MCP Speak includes built-in meeting awareness to avoid speaking over your meetings:
+- Before playing speech audio via `say` or `omnivoice`, the server checks `~/.in-meeting`.
+- If the file contains `active` (case-insensitive), all audio playback is immediately suppressed.
+- If the file contains `inactive`, is empty, or does not exist, audio plays normally.
+
+This feature works seamlessly with the [**In Meeting** app](https://github.com/fellowgeek/in-meeting) to automatically detect active camera and microphone use and keep your audio muted during calls.
 
 ---
 
