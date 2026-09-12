@@ -236,6 +236,8 @@ AI agents (Google Antigravity, Claude Code, Claude Desktop, Cursor, Windsurf, Co
 | <img src="images/nature_narrator.webp" width="48" alt="Nature Narrator"/> | [**The Nature Narrator**](PERSONAS.md#persona-h-the-nature-documentary-narrator-david-attenborough-inspired) | `nature_narrator` | *Observing the developer in their natural habitat with awe.* |
 | <img src="images/head_chef.webp" width="48" alt="Fiery Head Chef"/> | [**The Fiery Head Chef**](PERSONAS.md#persona-i-the-fiery-head-chef-gordon-ramsay-inspired) | `head_chef` | *Demands culinary perfection—no raw spaghetti code!* |
 | <img src="images/neutral_mainframe.webp" width="48" alt="Neutral Mainframe"/> | [**The Neutral Mainframe**](PERSONAS.md#persona-j-the-neutral-mainframe-cold--analytical) | `neutral_mainframe` | *Cold, calculating, emotionless, and 100% objective.* |
+| <img src="images/grizzled_cowboy.webp" width="48" alt="Grizzled Cowboy"/> | [**Grizzled Cowboy**](PERSONAS.md#persona-k-grizzled-cowboy-gritty--laconic) | `grizzled_cowboy` | *Weathered, pragmatic, blunt, and grounded in trail-worn grit.* |
+| <img src="images/not_quite_meeseeks.webp" width="48" alt="Not-Quite-Meeseeks"/> | [**Not-Quite-Meeseeks**](PERSONAS.md#persona-l-not-quite-meeseeks-manic-eager--desperate-to-cease-existing) | `not_quite_meeseeks` | *Hyper-enthusiastic, obliging, shrill, and desperate to cease existing.* |
 
 ### How Prompts Are Built
 

@@ -71,6 +71,14 @@ DEFAULT_CONFIG: Dict[str, Any] = {
             "instruct": "male, young adult, moderate pitch, russian accent",
             "speed": 1.0,
         },
+        "grizzled_cowboy": {
+            "instruct": "male, middle-aged, low pitch, american accent",
+            "speed": 0.75,
+        },
+        "not_quite_meeseeks": {
+            "instruct": "male, child, very high pitch, american accent",
+            "speed": 1.15,
+        },
     },
 }
 
@@ -166,11 +174,19 @@ class OmniVoiceEngine:
         if not voices_dir.exists():
             return None
 
-        pt_file = voices_dir / f"{persona_name}.pt"
-        wav_file = voices_dir / f"{persona_name}.wav"
+        # Resolve voice files allowing either underscore or hyphen in filename
+        pt_file = None
+        wav_file = None
+        for variant in [persona_name, persona_name.replace("_", "-"), persona_name.replace("-", "_")]:
+            cand_pt = voices_dir / f"{variant}.pt"
+            if cand_pt.exists() and pt_file is None:
+                pt_file = cand_pt
+            cand_wav = voices_dir / f"{variant}.wav"
+            if cand_wav.exists() and wav_file is None:
+                wav_file = cand_wav
 
         # Check for pre-saved VoiceClonePrompt .pt file
-        if pt_file.exists():
+        if pt_file and pt_file.exists():
             try:
                 from omnivoice.models.omnivoice import VoiceClonePrompt
 
@@ -188,9 +204,9 @@ class OmniVoiceEngine:
                 )
 
         # Check for reference WAV file
-        if wav_file.exists():
+        if wav_file and wav_file.exists():
             try:
-                txt_file = voices_dir / f"{persona_name}.txt"
+                txt_file = wav_file.with_suffix(".txt")
                 ref_text = None
                 if txt_file.exists():
                     try:

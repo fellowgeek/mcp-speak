@@ -25,6 +25,8 @@ When `mcp-speak` is configured with `engine: "omnivoice"`:
 | `poet` | `poet.wav` | `poet.txt` |
 | `head_chef` | `head_chef.wav` | `head_chef.txt` |
 | `neutral_mainframe` | `neutral_mainframe.wav` | `neutral_mainframe.txt` |
+| `grizzled_cowboy` | `grizzled_cowboy.wav` | `grizzled_cowboy.txt` |
+| `not_quite_meeseeks` | `not_quite_meeseeks.wav` | `not_quite_meeseeks.txt` |
 
 ---
 

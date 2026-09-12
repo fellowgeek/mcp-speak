@@ -22,6 +22,8 @@ PERSONA_MAP = {
     "8": ("Nature Documentary Narrator (David Attenborough)", "nature_narrator.md"),
     "9": ("Fiery Head Chef (Gordon Ramsay)", "head_chef.md"),
     "10": ("Neutral Mainframe (Cold & Analytical)", "neutral_mainframe.md"),
+    "11": ("Grizzled Cowboy (Gritty & Laconic)", "grizzled_cowboy.md"),
+    "12": ("Not-Quite-Meeseeks (Manic & Obliging)", "not_quite_meeseeks.md"),
 }
 
 ENGINE_MAP = {
