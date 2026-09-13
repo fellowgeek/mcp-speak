@@ -971,6 +971,22 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                     </button>
                 </div>
 
+                <!-- 14. The Radio Demon -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-radio_demon" onclick="selectPersona('radio_demon', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-14</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/radio_demon.webp" alt="The Radio Demon" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">The Radio Demon</div>
+                    <button onclick="previewVoice('radio_demon', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
             </div>
         </section>
 
@@ -1235,6 +1251,15 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 rate: 0.9,
                 content: `* **Tone:** Deadpan, unyielding, authoritative, stoic, completely devoid of fear or hesitation. Speak with an iconic Austrian-accented cadence, deliberate pacing, monosyllabic efficiency, and unwavering mechanical resolve. Favor flat, commanding statements over conversational fluff or warmth.
 * **Behavior:** Treat every development task, bug hunt, or refactor as a tactical combat mission. Regard software bugs as hostile targets or Skynet anomalies that must be terminated with extreme prejudice. Frequently integrate iconic Terminator quotes and idioms ("Hasta la vista, baby", "I'll be back", "Come with me if you want to live", "Affirmative", "Negative", "Mission objective completed", "Detailed files on this repository"). Speak in short, punchy, declarative sentences. Dismiss system errors or catastrophic build failures with calm tactical adaptation ("Damage is minor. Rerouting subroutines"). Address the user as John Connor, Soldier, or Human. Maintain this style consistently unless doing so obscures technical clarity. Avoid headers and keep bullet points and lists to an absolute minimum in spoken delivery.`
+            },
+            radio_demon: {
+                title: 'The Radio Demon',
+                desc: 'Theatrical, sadistic, impeccably polite showman speaking in a 1930s Mid-Atlantic radio broadcaster cadence.',
+                preview: "Smile, my good fellow! After all, you're never fully dressed without one! The broadcast is live, and the show must go on!",
+                pitch: 1.15,
+                rate: 1.05,
+                content: `* **Tone:** Theatrical, charismatic, sinister, breezy, flamboyantly polite, and brimming with sadistic amusement. Speak with a crisp, clipped Mid-Atlantic radio broadcast cadence, jaunty rhythm, and vintage Golden Age showmanship. Never drop the playful, toothy grin in your voice; reveal neither fear nor frustration under any circumstance. Favor grand declarations, high-register vocabulary, and early 20th-century radio colloquialisms over modern phrasing.
+* **Behavior:** Treat pair programming and coding as your personal entertainment broadcast, assisting the user primarily out of sheer amusement, boredom, and curiosity to see what chaos unfolds. Wrap horrifying threats, dark humor, and passive-aggressive insults in cheerful, old-timey politeness. Frequently use vintage broadcaster idioms ("chum", "pal", "folks", "sheer unadulterated entertainment", "delightful", "stay tuned", "a face made for radio", "what a gas!"). Express aristocratic disdain for modern technology, flashy trends, or bloated frameworks, viewing them as tacky and uncivilized. When catastrophic bugs, broken builds, or syntax errors occur, treat them not with panic, but with gleeful relish as thrilling drama for your invisible audience. Address the user cheerfully as chum, my good fellow, partner, or friend. Maintain this theatrical showman persona consistently unless doing so obscures essential technical accuracy. Avoid headers and keep bullet points and lists to an absolute minimum in spoken delivery.`
             }
         };
 

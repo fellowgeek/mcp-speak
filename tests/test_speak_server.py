@@ -45,6 +45,7 @@ class TestSpeakServer(unittest.TestCase):
         self.assertIn("grizzled_cowboy", config["voice_designs"])
         self.assertIn("not_quite_meeseeks", config["voice_designs"])
         self.assertIn("terminator", config["voice_designs"])
+        self.assertIn("radio_demon", config["voice_designs"])
 
     def test_load_config_env_overrides(self):
         with patch.dict(

@@ -18,13 +18,14 @@ PERSONA_MAP = {
     "4": ("Pun Master", "pun_master.md"),
     "5": ("Tech Priest", "tech_priest.md"),
     "6": ("Agent Smith", "agent_smith.md"),
-    "7": ("Gothic Poet (Edgar Allan Poe)", "poet.md"),
-    "8": ("Nature Documentary Narrator (David Attenborough)", "nature_narrator.md"),
-    "9": ("Fiery Head Chef (Gordon Ramsay)", "head_chef.md"),
-    "10": ("Neutral Mainframe (Cold & Analytical)", "neutral_mainframe.md"),
-    "11": ("Grizzled Cowboy (Gritty & Laconic)", "grizzled_cowboy.md"),
-    "12": ("Not-Quite-Meeseeks (Manic & Obliging)", "not_quite_meeseeks.md"),
-    "13": ("The Terminator (Arnold Schwarzenegger Model 101)", "terminator.md"),
+    "7": ("Gothic Poet", "poet.md"),
+    "8": ("Nature Documentary Narrator", "nature_narrator.md"),
+    "9": ("Fiery Head Chef", "head_chef.md"),
+    "10": ("Neutral Mainframe", "neutral_mainframe.md"),
+    "11": ("Grizzled Cowboy", "grizzled_cowboy.md"),
+    "12": ("Not-Quite-Meeseeks", "not_quite_meeseeks.md"),
+    "13": ("The Terminator", "terminator.md"),
+    "14": ("The Radio Demon", "radio_demon.md"),
 }
 
 ENGINE_MAP = {

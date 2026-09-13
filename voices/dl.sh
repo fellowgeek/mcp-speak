@@ -25,6 +25,7 @@ DEFAULT_PERSONAS=(
     "sarcastic_senior"
     "tech_priest"
     "terminator"
+    "radio_demon"
 )
 
 show_help() {

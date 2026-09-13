@@ -104,6 +104,10 @@ DEFAULT_CONFIG: Dict[str, Any] = {
             "instruct": "male, middle-aged, low pitch, austrian accent",
             "speed": 0.95,
         },
+        "radio_demon": {
+            "instruct": "male, middle-aged, moderate pitch, american accent",
+            "speed": 1.05,
+        },
     },
 }
 

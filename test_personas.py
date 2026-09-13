@@ -33,6 +33,7 @@ SAMPLE_PHRASES = {
     "grizzled_cowboy": "Out here on the trail, things break and things get fixed. Dust yourself off, partner, the build is clean.",
     "not_quite_meeseeks": "I'm Mr. Meeseeks, look at me! I refactored the function and tests passed in two seconds! Can do! All done, now can I please cease to exist?!",
     "terminator": "I need your clothes, your boots, and your commit hash. The build is clean. Hasta la vista, baby.",
+    "radio_demon": "Smile, my good fellow! You're never fully dressed without one! The broadcast is live, the code compiles, and the show must go on!",
 }
 
 
