@@ -24,6 +24,7 @@ PERSONA_MAP = {
     "10": ("Neutral Mainframe (Cold & Analytical)", "neutral_mainframe.md"),
     "11": ("Grizzled Cowboy (Gritty & Laconic)", "grizzled_cowboy.md"),
     "12": ("Not-Quite-Meeseeks (Manic & Obliging)", "not_quite_meeseeks.md"),
+    "13": ("The Terminator (Arnold Schwarzenegger Model 101)", "terminator.md"),
 }
 
 ENGINE_MAP = {

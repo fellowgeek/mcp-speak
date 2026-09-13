@@ -27,6 +27,7 @@ When `mcp-speak` is configured with `engine: "omnivoice"`:
 | `neutral_mainframe` | `neutral_mainframe.wav` | `neutral_mainframe.txt` |
 | `grizzled_cowboy` | `grizzled_cowboy.wav` | `grizzled_cowboy.txt` |
 | `not_quite_meeseeks` | `not_quite_meeseeks.wav` | `not_quite_meeseeks.txt` |
+| `terminator` | `terminator.wav` | `terminator.txt` |
 
 ---
 

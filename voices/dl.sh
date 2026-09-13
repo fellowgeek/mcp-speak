@@ -24,6 +24,7 @@ DEFAULT_PERSONAS=(
     "pun_master"
     "sarcastic_senior"
     "tech_priest"
+    "terminator"
 )
 
 show_help() {

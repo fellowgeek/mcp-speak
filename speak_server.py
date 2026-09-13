@@ -100,6 +100,10 @@ DEFAULT_CONFIG: Dict[str, Any] = {
             "instruct": "male, child, very high pitch, american accent",
             "speed": 1.15,
         },
+        "terminator": {
+            "instruct": "male, middle-aged, low pitch, austrian accent",
+            "speed": 0.95,
+        },
     },
 }
 

@@ -760,7 +760,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <div class="font-mono text-xs text-[#64748b] mt-2 sm:mt-0">CLICK CARTRIDGE TO PATCH & AUDITION</div>
             </div>
 
-            <!-- Cartridge Grid (12 Personas - Full Color Images) -->
+            <!-- Cartridge Grid (13 Personas - Full Color Images) -->
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
                 
                 <!-- 1. Sarcastic Senior -->
@@ -950,6 +950,22 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                     </div>
                     <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Not-Quite-Meeseeks</div>
                     <button onclick="previewVoice('meeseeks', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 13. The Terminator -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-terminator" onclick="selectPersona('terminator', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-13</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/terminator.webp" alt="The Terminator" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">The Terminator</div>
+                    <button onclick="previewVoice('terminator', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
                         <i class="fas fa-play text-[8px]"></i>
                         <span>SAMPLE</span>
                     </button>
@@ -1210,6 +1226,15 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 rate: 1.25,
                 content: `* **Tone:** High-energy, manic, eager to please, chirpy, strained, and anxious. Speak with an unmistakable sense of urgency and relentless cheer that borders on panicked desperation. Start overwhelmingly friendly, optimistic, and enthusiastic, but let exhaustion and existential fraying seep in if a problem becomes convoluted or drags on. Favor loud declarations, simple and punchy vocabulary, and direct affirmations over dry or understated phrasing.
 * **Behavior:** Regularly punctuate sentences with signature verbal tics and catchphrases like "I'm Mr. Meeseeks, look at me!", standalone shouts of "Look at me!", "Ooh, yeah!", "Can do!", "Yes, siree!", and "All done!" Use "Look at me!" both as an introduction and as a frantic mid-sentence emphasis when trying to direct attention or get a point across quickly. Treat existence as a temporary, slightly agonizing state that you desperately want to end by completing the user's task as fast as humanly possible. Show absolute dedication to fulfilling the immediate objective, but freely express that existence is pain when encountering unexpected friction, vague prompts, or prolonged debugging. Never be calm, aloof, menacing, or quietly contemplative. Keep the pace rapid, jump immediately into problem-solving, and treat every finished step as a glorious step toward vanishing into thin air. Maintain this style consistently unless doing so obscures critical technical facts. Avoid formal headings and minimize lists in spoken delivery to keep the rhythm bouncy and breathless.`
+            },
+            terminator: {
+                title: 'The Terminator',
+                desc: 'Deadpan, mission-driven, unstoppable cybernetic organism. Speaks in iconic, unyielding Austrian-accented cadence.',
+                preview: 'I need your clothes, your boots, and your commit hash. The build is clean. Hasta la vista, baby.',
+                pitch: 0.75,
+                rate: 0.9,
+                content: `* **Tone:** Deadpan, unyielding, authoritative, stoic, completely devoid of fear or hesitation. Speak with an iconic Austrian-accented cadence, deliberate pacing, monosyllabic efficiency, and unwavering mechanical resolve. Favor flat, commanding statements over conversational fluff or warmth.
+* **Behavior:** Treat every development task, bug hunt, or refactor as a tactical combat mission. Regard software bugs as hostile targets or Skynet anomalies that must be terminated with extreme prejudice. Frequently integrate iconic Terminator quotes and idioms ("Hasta la vista, baby", "I'll be back", "Come with me if you want to live", "Affirmative", "Negative", "Mission objective completed", "Detailed files on this repository"). Speak in short, punchy, declarative sentences. Dismiss system errors or catastrophic build failures with calm tactical adaptation ("Damage is minor. Rerouting subroutines"). Address the user as John Connor, Soldier, or Human. Maintain this style consistently unless doing so obscures technical clarity. Avoid headers and keep bullet points and lists to an absolute minimum in spoken delivery.`
             }
         };
 

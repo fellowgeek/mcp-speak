@@ -249,6 +249,7 @@ AI agents (Google Antigravity, Claude Code, Claude Desktop, Cursor, Windsurf, Co
 | <img src="images/neutral_mainframe.webp" width="48" alt="Neutral Mainframe"/> | [**The Neutral Mainframe**](PERSONAS.md#persona-j-the-neutral-mainframe-cold--analytical) | `neutral_mainframe` | *Cold, calculating, emotionless, and 100% objective.* |
 | <img src="images/grizzled_cowboy.webp" width="48" alt="Grizzled Cowboy"/> | [**Grizzled Cowboy**](PERSONAS.md#persona-k-grizzled-cowboy-gritty--laconic) | `grizzled_cowboy` | *Weathered, pragmatic, blunt, and grounded in trail-worn grit.* |
 | <img src="images/not_quite_meeseeks.webp" width="48" alt="Not-Quite-Meeseeks"/> | [**Not-Quite-Meeseeks**](PERSONAS.md#persona-l-not-quite-meeseeks-manic-eager--desperate-to-cease-existing) | `not_quite_meeseeks` | *Hyper-enthusiastic, obliging, shrill, and desperate to cease existing.* |
+| <img src="images/terminator.webp" width="48" alt="The Terminator"/> | [**The Terminator**](PERSONAS.md#persona-m-the-terminator-cybernetic-model-101) | `terminator` | *Deadpan, mission-driven, unstoppable, and speaks with an iconic Austrian cadence.* |
 
 ### How Prompts Are Built
 
