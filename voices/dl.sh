@@ -24,6 +24,10 @@ DEFAULT_PERSONAS=(
     "pun_master"
     "sarcastic_senior"
     "tech_priest"
+    "terminator"
+    "radio_demon"
+    "dr_claw"
+    "cynic"
 )
 
 show_help() {

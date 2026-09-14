@@ -100,6 +100,22 @@ DEFAULT_CONFIG: Dict[str, Any] = {
             "instruct": "male, child, very high pitch, american accent",
             "speed": 1.15,
         },
+        "terminator": {
+            "instruct": "male, middle-aged, low pitch, austrian accent",
+            "speed": 0.95,
+        },
+        "radio_demon": {
+            "instruct": "male, middle-aged, moderate pitch, american accent",
+            "speed": 1.05,
+        },
+        "dr_claw": {
+            "instruct": "male, middle-aged, high pitch, american accent",
+            "speed": 1.05,
+        },
+        "cynic": {
+            "instruct": "male, elderly, very low pitch, american accent",
+            "speed": 1.10,
+        },
     },
 }
 

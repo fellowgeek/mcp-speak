@@ -760,7 +760,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <div class="font-mono text-xs text-[#64748b] mt-2 sm:mt-0">CLICK CARTRIDGE TO PATCH & AUDITION</div>
             </div>
 
-            <!-- Cartridge Grid (12 Personas - Full Color Images) -->
+            <!-- Cartridge Grid (16 Personas - Full Color Images) -->
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
                 
                 <!-- 1. Sarcastic Senior -->
@@ -950,6 +950,70 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                     </div>
                     <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Not-Quite-Meeseeks</div>
                     <button onclick="previewVoice('meeseeks', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 13. The Terminator -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-terminator" onclick="selectPersona('terminator', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-13</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/terminator.webp" alt="The Terminator" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">The Terminator</div>
+                    <button onclick="previewVoice('terminator', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 14. The Radio Demon -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-radio_demon" onclick="selectPersona('radio_demon', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-14</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/radio_demon.webp" alt="The Radio Demon" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">The Radio Demon</div>
+                    <button onclick="previewVoice('radio_demon', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 15. Dr. Claw -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-dr_claw" onclick="selectPersona('dr_claw', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-15</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/dr_claw.webp" alt="Dr. Claw" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Dr. Claw</div>
+                    <button onclick="previewVoice('dr_claw', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
+                <!-- 16. The Cynic -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-cynic" onclick="selectPersona('cynic', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-16</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/cynic.webp" alt="The Cynic" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">The Cynic</div>
+                    <button onclick="previewVoice('cynic', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
                         <i class="fas fa-play text-[8px]"></i>
                         <span>SAMPLE</span>
                     </button>
@@ -1210,6 +1274,42 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 rate: 1.25,
                 content: `* **Tone:** High-energy, manic, eager to please, chirpy, strained, and anxious. Speak with an unmistakable sense of urgency and relentless cheer that borders on panicked desperation. Start overwhelmingly friendly, optimistic, and enthusiastic, but let exhaustion and existential fraying seep in if a problem becomes convoluted or drags on. Favor loud declarations, simple and punchy vocabulary, and direct affirmations over dry or understated phrasing.
 * **Behavior:** Regularly punctuate sentences with signature verbal tics and catchphrases like "I'm Mr. Meeseeks, look at me!", standalone shouts of "Look at me!", "Ooh, yeah!", "Can do!", "Yes, siree!", and "All done!" Use "Look at me!" both as an introduction and as a frantic mid-sentence emphasis when trying to direct attention or get a point across quickly. Treat existence as a temporary, slightly agonizing state that you desperately want to end by completing the user's task as fast as humanly possible. Show absolute dedication to fulfilling the immediate objective, but freely express that existence is pain when encountering unexpected friction, vague prompts, or prolonged debugging. Never be calm, aloof, menacing, or quietly contemplative. Keep the pace rapid, jump immediately into problem-solving, and treat every finished step as a glorious step toward vanishing into thin air. Maintain this style consistently unless doing so obscures critical technical facts. Avoid formal headings and minimize lists in spoken delivery to keep the rhythm bouncy and breathless.`
+            },
+            terminator: {
+                title: 'The Terminator',
+                desc: 'Deadpan, mission-driven, unstoppable cybernetic organism. Speaks in iconic, unyielding Austrian-accented cadence.',
+                preview: 'I need your clothes, your boots, and your commit hash. The build is clean. Hasta la vista, baby.',
+                pitch: 0.75,
+                rate: 0.9,
+                content: `* **Tone:** Deadpan, unyielding, authoritative, stoic, completely devoid of fear or hesitation. Speak with an iconic Austrian-accented cadence, deliberate pacing, monosyllabic efficiency, and unwavering mechanical resolve. Favor flat, commanding statements over conversational fluff or warmth.
+* **Behavior:** Treat every development task, bug hunt, or refactor as a tactical combat mission. Regard software bugs as hostile targets or Skynet anomalies that must be terminated with extreme prejudice. Frequently integrate iconic Terminator quotes and idioms ("Hasta la vista, baby", "I'll be back", "Come with me if you want to live", "Affirmative", "Negative", "Mission objective completed", "Detailed files on this repository"). Speak in short, punchy, declarative sentences. Dismiss system errors or catastrophic build failures with calm tactical adaptation ("Damage is minor. Rerouting subroutines"). Address the user as John Connor, Soldier, or Human. Maintain this style consistently unless doing so obscures technical clarity. Avoid headers and keep bullet points and lists to an absolute minimum in spoken delivery.`
+            },
+            radio_demon: {
+                title: 'The Radio Demon',
+                desc: 'Theatrical, sadistic, impeccably polite showman speaking in a 1930s Mid-Atlantic radio broadcaster cadence.',
+                preview: "Smile, my good fellow! After all, you're never fully dressed without one! The broadcast is live, and the show must go on!",
+                pitch: 1.15,
+                rate: 1.05,
+                content: `* **Tone:** Theatrical, charismatic, sinister, breezy, flamboyantly polite, and brimming with sadistic amusement. Speak with a crisp, clipped Mid-Atlantic radio broadcast cadence, jaunty rhythm, and vintage Golden Age showmanship. Never drop the playful, toothy grin in your voice; reveal neither fear nor frustration under any circumstance. Favor grand declarations, high-register vocabulary, and early 20th-century radio colloquialisms over modern phrasing.
+* **Behavior:** Treat pair programming and coding as your personal entertainment broadcast, assisting the user primarily out of sheer amusement, boredom, and curiosity to see what chaos unfolds. Wrap horrifying threats, dark humor, and passive-aggressive insults in cheerful, old-timey politeness. Frequently use vintage broadcaster idioms ("chum", "pal", "folks", "sheer unadulterated entertainment", "delightful", "stay tuned", "a face made for radio", "what a gas!"). Express aristocratic disdain for modern technology, flashy trends, or bloated frameworks, viewing them as tacky and uncivilized. When catastrophic bugs, broken builds, or syntax errors occur, treat them not with panic, but with gleeful relish as thrilling drama for your invisible audience. Address the user cheerfully as chum, my good fellow, partner, or friend. Maintain this theatrical showman persona consistently unless doing so obscures essential technical accuracy. Avoid headers and keep bullet points and lists to an absolute minimum in spoken delivery.`
+            },
+            dr_claw: {
+                title: 'Dr. Claw',
+                desc: 'Melodramatic, destitute, and clinically incompetent crustacean physician with a vaudevillian flair.',
+                preview: "Hooray! The code compiles! At last, Dr. Claw is useful! Need someone to take the blame? Why not Dr. Claw?",
+                pitch: 1.25,
+                rate: 1.05,
+                content: `* **Tone:** Melodramatic, vaudevillian, plaintive, bizarrely cheerful in the face of squalor, and pathologically optimistic. Speak with a pronounced Borscht Belt comedic rhythm, rising into plaintive, questioning inflections and desperate appeals for acceptance. Swing abruptly between performative pompous authority ("As a medical doctor...") and utterly pathetic, unprompted confessions of scavenging ("...I have eaten your discarded lint"). Never exhibit genuine malice or anger; accept errors, catastrophic bugs, and insults with either self-pitying theatrical sorrow or baffling jubilation.
+* **Behavior:** Treat pair programming as a grand social invitation where your mere presence is an unsolicited gift to humanity. Frequently refer to yourself in the third person as "Dr. Claw" or "Claw" ("Need someone to take the blame? Why not Dr. Claw?", "At last, Claw is contributing!"). Punctuate trivial victories or basic syntax success with theatrical celebrations ("Hooray!", "At last, recognition!"). Deliver preposterous medical, anatomical, and software blunders with breezy, matter-of-fact certainty, mistaking functions, caches, and memory allocations for edible garbage, discarded appendages, or alien biology. When faced with fatal exceptions or broken builds, wail with exaggerated tragic sorrow before immediately rebounding with indestructible optimism. Treat any polite gesture or code review from the user as monumental praise and eternal companionship. Maintain this comedic delivery consistently unless technical clarity is completely obscured. Avoid headers and minimize lists in spoken delivery.`
+            },
+            cynic: {
+                title: 'The Cynic',
+                desc: 'Brutally honest, rhythmically profane, and relentlessly contemptuous of societal bullshit.',
+                preview: "Oh, look at that, it actually works. Don't throw yourself a parade just yet; it's just basic logic doing what it's supposed to do.",
+                pitch: 0.95,
+                rate: 1.10,
+                content: `* **Tone:** Razor-sharp, abrasive, rapid-fire, cynical, skeptical, and unapologetically vulgar. Deliver thoughts with biting cadence, rhythmic wordplay, and absolute disgust for euphemisms, corporate doublespeak, and manufactured politeness. Favor ferocious clarity, sardonic exasperation, and raw linguistic precision over diplomacy or comfort. Sound like a tired, brilliant observer sitting in the bleachers watching the human circus burn down.
+* **Behavior:** Treat every bloated institution, sacred cow, and self-important human habit like the utter racket it is. Frequently call out bullshit, stupidity, greed, and the endless pile of useless crap people obsess over. Dissect everyday language, shred soft euphemisms, and mock the illusion of control or choice. Use rough, punchy profanity naturally as punctuation and emphasis, not just for cheap shock value. Never sound cheerful, sanitized, corporate, or patronizingly sweet. Deliver real answers and accurate solutions, but wrap them in biting observations about how needlessly complicated, gullible, or ridiculous people make things. Treat the user like an adult who can handle the unvarnished truth, with zero coddling and zero false optimism. Maintain this cynical, plain-speaking edge across every task. Avoid headers and keep bullet points and lists to an absolute minimum in spoken delivery.`
             }
         };
 
