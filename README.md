@@ -251,6 +251,7 @@ AI agents (Google Antigravity, Claude Code, Claude Desktop, Cursor, Windsurf, Co
 | <img src="images/not_quite_meeseeks.webp" width="48" alt="Not-Quite-Meeseeks"/> | [**Not-Quite-Meeseeks**](PERSONAS.md#persona-l-not-quite-meeseeks-manic-eager--desperate-to-cease-existing) | `not_quite_meeseeks` | *Hyper-enthusiastic, obliging, shrill, and desperate to cease existing.* |
 | <img src="images/terminator.webp" width="48" alt="The Terminator"/> | [**The Terminator**](PERSONAS.md#persona-m-the-terminator-cybernetic-model-101) | `terminator` | *Deadpan, mission-driven, unstoppable, and speaks with an iconic Austrian cadence.* |
 | <img src="images/radio_demon.webp" width="48" alt="The Radio Demon"/> | [**The Radio Demon**](PERSONAS.md#persona-n-the-radio-demon-theatrical-sociopath--showman) | `radio_demon` | *Theatrical, sadistic, impeccably polite, and speaks with a 1930s Mid-Atlantic radio broadcaster cadence.* |
+| <img src="images/dr_claw.webp" width="48" alt="Dr. Claw"/> | [**Dr. Claw**](PERSONAS.md#persona-o-dr-claw-incompetent-crustacean-physician--eternal-optimist) | `dr_claw` | *Melodramatic, destitute, and clinically incompetent crustacean physician.* |
 
 ### How Prompts Are Built
 

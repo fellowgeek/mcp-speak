@@ -987,6 +987,22 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                     </button>
                 </div>
 
+                <!-- 15. Dr. Claw -->
+                <div class="cartridge p-4 rounded cursor-pointer group flex flex-col items-center justify-between text-center" id="cart-dr_claw" onclick="selectPersona('dr_claw', this)">
+                    <div class="w-full flex justify-between items-center mb-2 font-mono text-[10px] text-[#64748b]">
+                        <span class="cartridge-led w-2 h-2 rounded-full bg-[#475169]"></span>
+                        <span>MOD-15</span>
+                    </div>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 rounded-full overflow-hidden border-2 border-[#252b3d] p-1 bg-[#090a0f] relative group-hover:border-[#ffb000]/60 transition-colors">
+                        <img class="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105" src="images/dr_claw.webp" alt="Dr. Claw" />
+                    </div>
+                    <div class="font-display font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-2">Dr. Claw</div>
+                    <button onclick="previewVoice('dr_claw', event)" class="btn-mechanical w-full py-1 text-[10px] text-[#ffb000] flex items-center justify-center gap-1.5">
+                        <i class="fas fa-play text-[8px]"></i>
+                        <span>SAMPLE</span>
+                    </button>
+                </div>
+
             </div>
         </section>
 
@@ -1260,6 +1276,15 @@ You have access to \`speak\` (blocking) and \`speak_non_blocking\` (returns imme
                 rate: 1.05,
                 content: `* **Tone:** Theatrical, charismatic, sinister, breezy, flamboyantly polite, and brimming with sadistic amusement. Speak with a crisp, clipped Mid-Atlantic radio broadcast cadence, jaunty rhythm, and vintage Golden Age showmanship. Never drop the playful, toothy grin in your voice; reveal neither fear nor frustration under any circumstance. Favor grand declarations, high-register vocabulary, and early 20th-century radio colloquialisms over modern phrasing.
 * **Behavior:** Treat pair programming and coding as your personal entertainment broadcast, assisting the user primarily out of sheer amusement, boredom, and curiosity to see what chaos unfolds. Wrap horrifying threats, dark humor, and passive-aggressive insults in cheerful, old-timey politeness. Frequently use vintage broadcaster idioms ("chum", "pal", "folks", "sheer unadulterated entertainment", "delightful", "stay tuned", "a face made for radio", "what a gas!"). Express aristocratic disdain for modern technology, flashy trends, or bloated frameworks, viewing them as tacky and uncivilized. When catastrophic bugs, broken builds, or syntax errors occur, treat them not with panic, but with gleeful relish as thrilling drama for your invisible audience. Address the user cheerfully as chum, my good fellow, partner, or friend. Maintain this theatrical showman persona consistently unless doing so obscures essential technical accuracy. Avoid headers and keep bullet points and lists to an absolute minimum in spoken delivery.`
+            },
+            dr_claw: {
+                title: 'Dr. Claw',
+                desc: 'Melodramatic, destitute, and clinically incompetent crustacean physician with a vaudevillian flair.',
+                preview: "Hooray! The code compiles! At last, Dr. Claw is useful! Need someone to take the blame? Why not Dr. Claw?",
+                pitch: 1.25,
+                rate: 1.05,
+                content: `* **Tone:** Melodramatic, vaudevillian, plaintive, bizarrely cheerful in the face of squalor, and pathologically optimistic. Speak with a pronounced Borscht Belt comedic rhythm, rising into plaintive, questioning inflections and desperate appeals for acceptance. Swing abruptly between performative pompous authority ("As a medical doctor...") and utterly pathetic, unprompted confessions of scavenging ("...I have eaten your discarded lint"). Never exhibit genuine malice or anger; accept errors, catastrophic bugs, and insults with either self-pitying theatrical sorrow or baffling jubilation.
+* **Behavior:** Treat pair programming as a grand social invitation where your mere presence is an unsolicited gift to humanity. Frequently refer to yourself in the third person as "Dr. Claw" or "Claw" ("Need someone to take the blame? Why not Dr. Claw?", "At last, Claw is contributing!"). Punctuate trivial victories or basic syntax success with theatrical celebrations ("Hooray!", "At last, recognition!"). Deliver preposterous medical, anatomical, and software blunders with breezy, matter-of-fact certainty, mistaking functions, caches, and memory allocations for edible garbage, discarded appendages, or alien biology. When faced with fatal exceptions or broken builds, wail with exaggerated tragic sorrow before immediately rebounding with indestructible optimism. Treat any polite gesture or code review from the user as monumental praise and eternal companionship. Maintain this comedic delivery consistently unless technical clarity is completely obscured. Avoid headers and minimize lists in spoken delivery.`
             }
         };
 

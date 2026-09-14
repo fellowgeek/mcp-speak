@@ -108,6 +108,10 @@ DEFAULT_CONFIG: Dict[str, Any] = {
             "instruct": "male, middle-aged, moderate pitch, american accent",
             "speed": 1.05,
         },
+        "dr_claw": {
+            "instruct": "male, middle-aged, high pitch, american accent",
+            "speed": 1.05,
+        },
     },
 }
 

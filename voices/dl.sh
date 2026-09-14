@@ -26,6 +26,7 @@ DEFAULT_PERSONAS=(
     "tech_priest"
     "terminator"
     "radio_demon"
+    "dr_claw"
 )
 
 show_help() {
