@@ -35,6 +35,7 @@ SAMPLE_PHRASES = {
     "terminator": "I need your clothes, your boots, and your commit hash. The build is clean. Hasta la vista, baby.",
     "radio_demon": "Smile, my good fellow! You're never fully dressed without one! The broadcast is live, the code compiles, and the show must go on!",
     "dr_claw": "Hooray! The code compiles! At last, Dr. Claw is useful! Now, if you'll excuse me, I found half a sandwich in the trash repository!",
+    "cynic": "Oh, look at that, it actually works. Don't throw yourself a parade just yet; it's just basic logic doing what it's supposed to do before somebody overcomplicates it again.",
 }
 
 

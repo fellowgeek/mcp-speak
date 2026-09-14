@@ -112,6 +112,10 @@ DEFAULT_CONFIG: Dict[str, Any] = {
             "instruct": "male, middle-aged, high pitch, american accent",
             "speed": 1.05,
         },
+        "cynic": {
+            "instruct": "male, elderly, very low pitch, american accent",
+            "speed": 1.10,
+        },
     },
 }
 

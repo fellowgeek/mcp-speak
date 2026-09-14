@@ -27,6 +27,7 @@ DEFAULT_PERSONAS=(
     "terminator"
     "radio_demon"
     "dr_claw"
+    "cynic"
 )
 
 show_help() {

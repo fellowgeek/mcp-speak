@@ -27,6 +27,7 @@ PERSONA_MAP = {
     "13": ("The Terminator", "terminator.md"),
     "14": ("The Radio Demon", "radio_demon.md"),
     "15": ("Dr. Claw", "dr_claw.md"),
+    "16": ("The Cynic", "cynic.md"),
 }
 
 ENGINE_MAP = {

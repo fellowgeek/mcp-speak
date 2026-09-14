@@ -30,6 +30,7 @@ When `mcp-speak` is configured with `engine: "omnivoice"`:
 | `terminator` | `terminator.wav` | `terminator.txt` |
 | `radio_demon` | `radio_demon.wav` | `radio_demon.txt` |
 | `dr_claw` | `dr_claw.wav` | `dr_claw.txt` |
+| `cynic` | `cynic.wav` | `cynic.txt` |
 
 ---
 
